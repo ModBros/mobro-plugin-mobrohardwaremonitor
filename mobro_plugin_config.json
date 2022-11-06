@@ -1,0 +1,8 @@
+{
+  "name": "modbros_mobrohardwaremonitor",
+  "displayName": "MoBro Hardware Monitor",
+  "author": "ModBros",
+  "description": null,
+  "assembly": "Plugin.MoBroHardwareMonitor.dll",
+  "localization": "Resources/Localization"
+}
