@@ -18,6 +18,7 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
   private readonly Dictionary<string, object?> _cpuValues = new();
   private readonly Dictionary<string, object?> _memoryValues = new();
   private readonly Dictionary<string, object?> _gpuValues = new();
+  private readonly Dictionary<string, object?> _systemValues = new();
 
   public MoBroHardwareMonitor()
   {
@@ -31,6 +32,7 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     _cpuValues.Clear();
     _memoryValues.Clear();
     _gpuValues.Clear();
+    _systemValues.Clear();
 
     foreach (var metric in GetAllStatic().SelectMany(m => m.ToRegistrations()))
     {
@@ -53,6 +55,12 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     foreach (var metric in _hardwareMonitor.GetGraphics().SelectMany(m => m.ToRegistrations()))
     {
       _gpuValues.TryAdd(metric.Id, null);
+      mobro.Register(metric);
+    }
+
+    foreach (var metric in _hardwareMonitor.GetSystem().ToRegistrations())
+    {
+      _systemValues.TryAdd(metric.Id, null);
       mobro.Register(metric);
     }
 
@@ -79,6 +87,10 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
       )
       .Concat(_gpuValues.Keys.Any(idSet.Contains)
         ? _hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues())
+        : Enumerable.Empty<IMetricValue>()
+      )
+      .Concat(_systemValues.Keys.Any(idSet.Contains)
+        ? _hardwareMonitor.GetSystem().ToMetricValues()
         : Enumerable.Empty<IMetricValue>()
       )
       .Where(m => idSet.Contains(m.Id))

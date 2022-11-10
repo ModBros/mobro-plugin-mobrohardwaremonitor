@@ -5,6 +5,7 @@ namespace MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
 
 internal interface IHardwareMonitor
 {
+  public SystemStats GetSystem();
   public ProcessorStats GetProcessor();
   public MemoryStats GetMemory();
   public IEnumerable<GraphicsStats> GetGraphics();

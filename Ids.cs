@@ -45,6 +45,7 @@ internal static class Ids
     internal const string OsType = "system.ostype";
     internal const string User = "system.user";
     internal const string Hostname = "system.hostname";
+    internal const string Time = "system.time";
   }
 
   internal static class Groups

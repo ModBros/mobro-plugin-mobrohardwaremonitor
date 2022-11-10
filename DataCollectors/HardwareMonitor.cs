@@ -27,6 +27,14 @@ internal class HardwareMonitor : IHardwareMonitor
     _gpuMemoryCounters = GroupGpuCounters("GPU Adapter Memory", "Dedicated Usage");
   }
 
+  public SystemStats GetSystem()
+  {
+    return new SystemStats(
+      SystemTime: DateTime.Now,
+      DateTime.UtcNow
+    );
+  }
+
   public ProcessorStats GetProcessor()
   {
     return new ProcessorStats(

@@ -9,6 +9,8 @@
   "metrics.system.user.desc": "The user currently logged in",
   "metrics.system.hostname.title": "Hostname",
   "metrics.system.hostname.desc": "The hostname of the system",
+  "metrics.system.time.title": "System time",
+  "metrics.system.time.desc": "The current date and time of the system",
 
   "metrics.cpu.name.title": "Name",
   "metrics.cpu.name.desc": "The name of the systems CPU",
