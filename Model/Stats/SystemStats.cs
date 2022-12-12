@@ -20,7 +20,7 @@ internal readonly record struct SystemStats(
     yield return Builder.DynamicMetric(Ids.System.Time, CoreMetricType.DateTime, CoreCategory.System);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.System.Time, DateTime, SystemTime);
   }

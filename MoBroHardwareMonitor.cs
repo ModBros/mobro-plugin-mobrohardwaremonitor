@@ -1,108 +1,87 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Timers;
 using MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
 using MoBro.Plugin.MoBroHardwareMonitor.Model;
 using MoBro.Plugin.SDK;
-using MoBro.Plugin.SDK.Models.Metrics;
 
 namespace MoBro.Plugin.MoBroHardwareMonitor;
 
 public sealed class MoBroHardwareMonitor : IMoBroPlugin
 {
+  private static readonly TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(1000);
+
   private readonly IHardwareInfoCollector _hardwareInfoCollector;
   private readonly IHardwareMonitor _hardwareMonitor;
 
-  private readonly Dictionary<string, object?> _staticValues = new();
-  private readonly Dictionary<string, object?> _cpuValues = new();
-  private readonly Dictionary<string, object?> _memoryValues = new();
-  private readonly Dictionary<string, object?> _gpuValues = new();
-  private readonly Dictionary<string, object?> _systemValues = new();
+  private readonly Timer _timer;
+  private IMoBroService? _service;
 
   public MoBroHardwareMonitor()
   {
     _hardwareInfoCollector = new HardwareInfoCollector();
     _hardwareMonitor = new HardwareMonitor();
+    _timer = new Timer
+    {
+      Interval = UpdateInterval.TotalMilliseconds,
+      AutoReset = true,
+      Enabled = false
+    };
+    _timer.Elapsed += Update;
   }
 
-  public Task Init(IPluginSettings settings, IMoBro mobro)
+  public void Init(IMoBroSettings settings, IMoBroService service)
   {
-    _staticValues.Clear();
-    _cpuValues.Clear();
-    _memoryValues.Clear();
-    _gpuValues.Clear();
-    _systemValues.Clear();
+    _service = service;
 
-    foreach (var metric in GetAllStatic().SelectMany(m => m.ToRegistrations()))
-    {
-      _staticValues.TryAdd(metric.Id, null);
-      mobro.Register(metric);
-    }
+    // static metrics
+    Register(_hardwareInfoCollector.GetSystem());
+    Register(_hardwareInfoCollector.GetProcessors());
+    Register(_hardwareInfoCollector.GetGraphics());
+    Register(_hardwareInfoCollector.GetMemory());
 
-    foreach (var metric in _hardwareMonitor.GetProcessor().ToRegistrations())
-    {
-      _cpuValues.TryAdd(metric.Id, null);
-      mobro.Register(metric);
-    }
+    // dynamic metrics
+    Register(_hardwareMonitor.GetProcessor());
+    Register(_hardwareMonitor.GetMemory());
+    Register(_hardwareMonitor.GetGraphics());
 
-    foreach (var metric in _hardwareMonitor.GetMemory().ToRegistrations())
-    {
-      _memoryValues.TryAdd(metric.Id, null);
-      mobro.Register(metric);
-    }
-
-    foreach (var metric in _hardwareMonitor.GetGraphics().SelectMany(m => m.ToRegistrations()))
-    {
-      _gpuValues.TryAdd(metric.Id, null);
-      mobro.Register(metric);
-    }
-
-    foreach (var metric in _hardwareMonitor.GetSystem().ToRegistrations())
-    {
-      _systemValues.TryAdd(metric.Id, null);
-      mobro.Register(metric);
-    }
-
-    return Task.CompletedTask;
+    // start polling metric values
+    _timer.Start();
   }
 
-  public Task<IEnumerable<IMetricValue>> GetMetricValues(IList<string> ids)
+  public void Pause() => _timer.Stop();
+
+  public void Resume() => _timer.Start();
+
+  private void Update(object? sender, ElapsedEventArgs e)
   {
-    var idSet = ids.ToImmutableHashSet();
-    var loadStatic = _staticValues.Keys.Any(idSet.Contains);
-
-    var metrics = loadStatic
-      ? GetAllStatic().SelectMany(m => m.ToMetricValues())
-      : Enumerable.Empty<IMetricValue>();
-
-    return Task.FromResult(metrics
-      .Concat(_cpuValues.Keys.Any(idSet.Contains)
-        ? _hardwareMonitor.GetProcessor().ToMetricValues()
-        : Enumerable.Empty<IMetricValue>()
-      )
-      .Concat(_memoryValues.Keys.Any(idSet.Contains)
-        ? _hardwareMonitor.GetMemory().ToMetricValues()
-        : Enumerable.Empty<IMetricValue>()
-      )
-      .Concat(_gpuValues.Keys.Any(idSet.Contains)
-        ? _hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues())
-        : Enumerable.Empty<IMetricValue>()
-      )
-      .Concat(_systemValues.Keys.Any(idSet.Contains)
-        ? _hardwareMonitor.GetSystem().ToMetricValues()
-        : Enumerable.Empty<IMetricValue>()
-      )
-      .Where(m => idSet.Contains(m.Id))
-    );
+    _service?.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
+    _service?.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
+    _service?.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
   }
 
-  private IEnumerable<IMetricConvertible> GetAllStatic()
+  private void Register<T>(IEnumerable<T> convertibles) where T : IMetricConvertible
   {
-    yield return _hardwareInfoCollector.GetSystem();
-    foreach (var m in _hardwareInfoCollector.GetProcessors()) yield return m;
-    foreach (var m in _hardwareInfoCollector.GetGraphics()) yield return m;
-    foreach (var m in _hardwareInfoCollector.GetMemory()) yield return m;
+    foreach (var metricConvertible in convertibles)
+    {
+      Register(metricConvertible);
+    }
+  }
+
+  private void Register<T>(in T convertible) where T : IMetricConvertible
+  {
+    // register the metrics
+    foreach (var moBroItem in convertible.ToRegistrations())
+    {
+      _service?.RegisterItem(moBroItem);
+    }
+
+    // update values for the metrics
+    foreach (var metricValue in convertible.ToMetricValues())
+    {
+      _service?.UpdateMetricValue(metricValue);
+    }
   }
 
   public void Dispose()

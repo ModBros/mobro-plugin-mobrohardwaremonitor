@@ -39,7 +39,7 @@ internal readonly record struct GraphicsInfo(
       Ids.Gpu.VerticalResolution, CoreMetricType.Numeric, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.Gpu.Name, DateTime, Name, Index);
     yield return Builder.Value(Ids.Gpu.Manufacturer, DateTime, Manufacturer, Index);

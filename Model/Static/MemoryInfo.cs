@@ -30,7 +30,7 @@ internal readonly record struct MemoryInfo(
       Ids.Memory.Frequency, CoreMetricType.Frequency, CoreCategory.Ram, Ids.Groups.MemoryGroupIndividual, Index);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.Memory.Capacity, DateTime, Capacity, Index);
     yield return Builder.Value(Ids.Memory.Manufacturer, DateTime, Manufacturer, Index);

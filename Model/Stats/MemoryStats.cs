@@ -30,7 +30,7 @@ internal readonly record struct MemoryStats(
       Ids.Memory.TotalUsage, CoreMetricType.Usage, CoreCategory.Ram, Ids.Groups.MemoryGroupOverall);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.Memory.TotalCapacity, DateTime, Capacity);
     yield return Builder.Value(Ids.Memory.TotalAvailable, DateTime, Available);

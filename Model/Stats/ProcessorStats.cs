@@ -24,7 +24,7 @@ internal readonly record struct ProcessorStats(
       Ids.Cpu.TotalClock, CoreMetricType.Frequency, CoreCategory.Cpu, Ids.Groups.CpuGroupOverall);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.Cpu.TotalUsage, DateTime, Usage);
     yield return Builder.Value(Ids.Cpu.TotalClock, DateTime, Clock);

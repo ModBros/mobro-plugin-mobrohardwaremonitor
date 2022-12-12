@@ -7,5 +7,5 @@ namespace MoBro.Plugin.MoBroHardwareMonitor.Model;
 internal interface IMetricConvertible
 {
   IEnumerable<IMoBroItem> ToRegistrations();
-  IEnumerable<IMetricValue> ToMetricValues();
+  IEnumerable<MetricValue> ToMetricValues();
 }

@@ -37,7 +37,7 @@ internal readonly record struct ProcessorInfo(
       Ids.Cpu.MaxClockSpeed, CoreMetricType.Frequency, CoreCategory.Cpu, Ids.Groups.CpuGroupIndividual, Index);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.Cpu.Name, DateTime, Name, Index);
     yield return Builder.Value(Ids.Cpu.Manufacturer, DateTime, Manufacturer, Index);

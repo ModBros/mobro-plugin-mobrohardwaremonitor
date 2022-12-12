@@ -25,7 +25,7 @@ internal readonly record struct GraphicsStats(
       Ids.Gpu.UsedMemory, CoreMetricType.Data, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.Gpu.Usage3D, DateTime, Usage3D, Index);
     yield return Builder.Value(Ids.Gpu.UsedMemory, DateTime, UsedMemory, Index);

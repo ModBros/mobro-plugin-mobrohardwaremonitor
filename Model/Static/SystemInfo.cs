@@ -25,7 +25,7 @@ internal readonly record struct SystemInfo(
     yield return Builder.StaticMetric(Ids.System.Hostname, CoreMetricType.Text, CoreCategory.System);
   }
 
-  public IEnumerable<IMetricValue> ToMetricValues()
+  public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.System.OsName, DateTime, OsName);
     yield return Builder.Value(Ids.System.OsVersion, DateTime, OsVersion);
