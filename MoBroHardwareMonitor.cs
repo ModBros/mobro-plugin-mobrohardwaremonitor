@@ -14,12 +14,12 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
 
   private readonly IHardwareInfoCollector _hardwareInfoCollector;
   private readonly IHardwareMonitor _hardwareMonitor;
-
   private readonly Timer _timer;
-  private IMoBroService? _service;
+  private readonly IMoBroService? _service;
 
-  public MoBroHardwareMonitor()
+  public MoBroHardwareMonitor(IMoBroService service)
   {
+    _service = service;
     _hardwareInfoCollector = new HardwareInfoCollector();
     _hardwareMonitor = new HardwareMonitor();
     _timer = new Timer
@@ -31,10 +31,8 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     _timer.Elapsed += Update;
   }
 
-  public void Init(IMoBroSettings settings, IMoBroService service)
+  public void Init()
   {
-    _service = service;
-
     // static metrics
     Register(_hardwareInfoCollector.GetSystem());
     Register(_hardwareInfoCollector.GetProcessors());
