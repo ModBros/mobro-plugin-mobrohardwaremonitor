@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TargetFramework>net7.0-windows</TargetFramework>
         <RootNamespace>MoBro.Plugin.MoBroHardwareMonitor</RootNamespace>
         <Authors>ModBros</Authors>
         <Company>ModBros OG</Company>
@@ -34,9 +34,9 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-        <PackageReference Include="MoBro.Plugin.SDK" Version="0.1.1" />
-        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="6.0.1" />
-        <PackageReference Include="System.Management" Version="6.0.0" />
+        <PackageReference Include="MoBro.Plugin.SDK" Version="0.1.2" />
+        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="7.0.0" />
+        <PackageReference Include="System.Management" Version="7.0.0" />
     </ItemGroup>
 
 </Project>

@@ -15,7 +15,7 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
   private readonly IHardwareInfoCollector _hardwareInfoCollector;
   private readonly IHardwareMonitor _hardwareMonitor;
   private readonly Timer _timer;
-  private readonly IMoBroService? _service;
+  private readonly IMoBroService _service;
 
   public MoBroHardwareMonitor(IMoBroService service)
   {
@@ -54,9 +54,9 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
 
   private void Update(object? sender, ElapsedEventArgs e)
   {
-    _service?.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
-    _service?.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
-    _service?.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
+    _service.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
+    _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
+    _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
   }
 
   private void Register<T>(IEnumerable<T> convertibles) where T : IMetricConvertible
@@ -72,13 +72,13 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     // register the metrics
     foreach (var moBroItem in convertible.ToRegistrations())
     {
-      _service?.RegisterItem(moBroItem);
+      _service.RegisterItem(moBroItem);
     }
 
     // update values for the metrics
     foreach (var metricValue in convertible.ToMetricValues())
     {
-      _service?.UpdateMetricValue(metricValue);
+      _service.UpdateMetricValue(metricValue);
     }
   }
 
