@@ -54,9 +54,16 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
 
   private void Update(object? sender, ElapsedEventArgs e)
   {
-    _service.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
-    _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
-    _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
+    try
+    {
+      _service.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
+      _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
+      _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
+    }
+    catch (Exception exception)
+    {
+      _service.NotifyError(exception);
+    }
   }
 
   private void Register<T>(IEnumerable<T> convertibles) where T : IMetricConvertible

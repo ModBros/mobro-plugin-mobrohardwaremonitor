@@ -34,7 +34,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-        <PackageReference Include="MoBro.Plugin.SDK" Version="0.1.2" />
+        <PackageReference Include="MoBro.Plugin.SDK" Version="0.1.4" />
         <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="7.0.0" />
         <PackageReference Include="System.Management" Version="7.0.0" />
     </ItemGroup>
