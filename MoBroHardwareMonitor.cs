@@ -1,34 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 using MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
 using MoBro.Plugin.MoBroHardwareMonitor.Model;
 using MoBro.Plugin.SDK;
+using MoBro.Plugin.SDK.Services;
 
 namespace MoBro.Plugin.MoBroHardwareMonitor;
 
 public sealed class MoBroHardwareMonitor : IMoBroPlugin
 {
   private static readonly TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(1000);
+  private static readonly TimeSpan InitialDelay = TimeSpan.FromSeconds(2);
 
   private readonly IHardwareInfoCollector _hardwareInfoCollector;
   private readonly IHardwareMonitor _hardwareMonitor;
-  private readonly Timer _timer;
   private readonly IMoBroService _service;
+  private readonly IMoBroScheduler _scheduler;
 
-  public MoBroHardwareMonitor(IMoBroService service)
+
+  public MoBroHardwareMonitor(IMoBroService service, IMoBroScheduler scheduler)
   {
     _service = service;
+    _scheduler = scheduler;
     _hardwareInfoCollector = new HardwareInfoCollector();
     _hardwareMonitor = new HardwareMonitor();
-    _timer = new Timer
-    {
-      Interval = UpdateInterval.TotalMilliseconds,
-      AutoReset = true,
-      Enabled = false
-    };
-    _timer.Elapsed += Update;
   }
 
   public void Init()
@@ -45,25 +41,14 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     Register(_hardwareMonitor.GetGraphics());
 
     // start polling metric values
-    _timer.Start();
+    _scheduler.Interval(Update, UpdateInterval, InitialDelay);
   }
 
-  public void Pause() => _timer.Stop();
-
-  public void Resume() => _timer.Start();
-
-  private void Update(object? sender, ElapsedEventArgs e)
+  private void Update()
   {
-    try
-    {
-      _service.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
-      _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
-      _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
-    }
-    catch (Exception exception)
-    {
-      _service.NotifyError(exception);
-    }
+    _service.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
+    _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
+    _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
   }
 
   private void Register<T>(IEnumerable<T> convertibles) where T : IMetricConvertible
@@ -79,7 +64,7 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     // register the metrics
     foreach (var moBroItem in convertible.ToRegistrations())
     {
-      _service.RegisterItem(moBroItem);
+      _service.Register(moBroItem);
     }
 
     // update values for the metrics
