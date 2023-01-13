@@ -18,13 +18,20 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
   private readonly IMoBroService _service;
   private readonly IMoBroScheduler _scheduler;
 
+  private readonly bool _monitorCpu;
+  private readonly bool _monitorGpu;
+  private readonly bool _monitorRam;
 
-  public MoBroHardwareMonitor(IMoBroService service, IMoBroScheduler scheduler)
+  public MoBroHardwareMonitor(IMoBroService service, IMoBroSettings settings, IMoBroScheduler scheduler)
   {
     _service = service;
     _scheduler = scheduler;
     _hardwareInfoCollector = new HardwareInfoCollector();
     _hardwareMonitor = new HardwareMonitor();
+
+    _monitorCpu = settings.GetValue<bool>("cpu_metrics");
+    _monitorGpu = settings.GetValue<bool>("gpu_metrics");
+    _monitorRam = settings.GetValue<bool>("ram_metrics");
   }
 
   public void Init()
@@ -36,9 +43,10 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     Register(_hardwareInfoCollector.GetMemory());
 
     // dynamic metrics
-    Register(_hardwareMonitor.GetProcessor());
-    Register(_hardwareMonitor.GetMemory());
-    Register(_hardwareMonitor.GetGraphics());
+    Register(_hardwareMonitor.GetSystem());
+    if (_monitorCpu) Register(_hardwareMonitor.GetProcessor());
+    if (_monitorGpu) Register(_hardwareMonitor.GetGraphics());
+    if (_monitorRam) Register(_hardwareMonitor.GetMemory());
 
     // start polling metric values
     _scheduler.Interval(Update, UpdateInterval, InitialDelay);
@@ -46,9 +54,11 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
 
   private void Update()
   {
-    _service.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
-    _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
-    _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
+    _service.UpdateMetricValues(_hardwareMonitor.GetSystem().ToMetricValues());
+
+    if (_monitorCpu) _service.UpdateMetricValues(_hardwareMonitor.GetProcessor().ToMetricValues());
+    if (_monitorGpu) _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
+    if (_monitorRam) _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
   }
 
   private void Register<T>(IEnumerable<T> convertibles) where T : IMetricConvertible

@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Settings to enable/disable metrics of certain components
+
 ### Changed
 
 - General optimizations, reduced memory allocations
-- Updated to new SDK 
+- Updated to new SDK
 - Updated to .NET 7
 
 ## 0.0.1 - 2022-10-17

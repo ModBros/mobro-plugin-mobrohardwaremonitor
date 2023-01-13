@@ -4,5 +4,31 @@
   "author": "ModBros",
   "description": null,
   "assembly": "Plugin.MoBroHardwareMonitor.dll",
-  "localization": "Resources/Localization"
+  "localization": "Resources/Localization",
+  "settings": [
+    {
+      "type": "checkbox",
+      "name": "cpu_metrics",
+      "label": "settings.cpu.title",
+      "description": "settings.cpu.desc",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "type": "checkbox",
+      "name": "gpu_metrics",
+      "label": "settings.gpu.title",
+      "description": "settings.gpu.desc",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "type": "checkbox",
+      "name": "ram_metrics",
+      "label": "settings.ram.title",
+      "description": "settings.ram.desc",
+      "defaultValue": true,
+      "required": false
+    }
+  ]
 }

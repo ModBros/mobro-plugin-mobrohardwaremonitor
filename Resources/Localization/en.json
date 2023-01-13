@@ -57,5 +57,12 @@
   "metrics.gpu.usage.3d.title": "3D Utilization",
   "metrics.gpu.usage.3d.desc": "Utilization of the 3D engine",
   "metrics.gpu.memory.used.title": "Used memory",
-  "metrics.gpu.memory.used.desc": "Dedicated GPU memory currently in use"
+  "metrics.gpu.memory.used.desc": "Dedicated GPU memory currently in use",
+
+  "settings.cpu.desc": "Whether processor (CPU) metrics are recorded",
+  "settings.cpu.title": "Processor",
+  "settings.gpu.desc": "Whether graphics card (GPU) metrics are recorded",
+  "settings.gpu.title": "Graphics card",
+  "settings.ram.desc": "Whether system memory (RAM) metrics are recorded",
+  "settings.ram.title": "Memory"
 }

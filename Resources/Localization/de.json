@@ -57,5 +57,12 @@
   "metrics.gpu.usage.3d.title": "3D Auslastung",
   "metrics.gpu.usage.3d.desc": "Aulastung der 3D Engine",
   "metrics.gpu.memory.used.title": "Verwendeter Speicher",
-  "metrics.gpu.memory.used.desc": "Dedizierter Grafikspeicher aktuell in Verwendung"
+  "metrics.gpu.memory.used.desc": "Dedizierter Grafikspeicher aktuell in Verwendung",
+
+  "settings.cpu.desc": "Ob Metriken zum Prozessor (CPU) aufgezeichnet werden",
+  "settings.cpu.title": "Prozessor",
+  "settings.gpu.desc": "Ob Metriken zur Grafikkarte (GPU) aufgezeichnet werden",
+  "settings.gpu.title": "Grafikkarte",
+  "settings.ram.desc": "Ob Metriken zum Arbeitsspeicher (RAM) aufgezeichnet werden",
+  "settings.ram.title": "Arbeitsspeicher"
 }
