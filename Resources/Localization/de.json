@@ -59,6 +59,8 @@
   "metrics.gpu.memory.used.title": "Verwendeter Speicher",
   "metrics.gpu.memory.used.desc": "Dedizierter Grafikspeicher aktuell in Verwendung",
 
+  "settings.update.desc": "Frequenz in Millisekunden in der die Sensoren ausgelesen werden um die Metriken zu aktualisieren",
+  "settings.update.title": "Updateintervall",
   "settings.cpu.desc": "Ob Metriken zum Prozessor (CPU) aufgezeichnet werden",
   "settings.cpu.title": "Prozessor",
   "settings.gpu.desc": "Ob Metriken zur Grafikkarte (GPU) aufgezeichnet werden",

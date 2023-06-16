@@ -10,14 +10,15 @@ namespace MoBro.Plugin.MoBroHardwareMonitor;
 
 public sealed class MoBroHardwareMonitor : IMoBroPlugin
 {
-  private static readonly TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(1000);
   private static readonly TimeSpan InitialDelay = TimeSpan.FromSeconds(2);
+  private const int DefaultUpdateFrequencyMs = 1000;
 
   private readonly IHardwareInfoCollector _hardwareInfoCollector;
   private readonly IHardwareMonitor _hardwareMonitor;
   private readonly IMoBroService _service;
   private readonly IMoBroScheduler _scheduler;
 
+  private readonly int _updateFrequency;
   private readonly bool _monitorCpu;
   private readonly bool _monitorGpu;
   private readonly bool _monitorRam;
@@ -29,6 +30,7 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     _hardwareInfoCollector = new HardwareInfoCollector();
     _hardwareMonitor = new HardwareMonitor();
 
+    _updateFrequency = settings.GetValue("update_frequency", DefaultUpdateFrequencyMs);
     _monitorCpu = settings.GetValue<bool>("cpu_metrics");
     _monitorGpu = settings.GetValue<bool>("gpu_metrics");
     _monitorRam = settings.GetValue<bool>("ram_metrics");
@@ -49,7 +51,7 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     if (_monitorRam) Register(_hardwareMonitor.GetMemory());
 
     // start polling metric values
-    _scheduler.Interval(Update, UpdateInterval, InitialDelay);
+    _scheduler.Interval(Update, TimeSpan.FromMilliseconds(_updateFrequency), InitialDelay);
   }
 
   private void Update()

@@ -7,6 +7,15 @@
   "localization": "Resources/Localization",
   "settings": [
     {
+      "type": "number",
+      "name": "update_frequency",
+      "label": "settings.update.title",
+      "description": "settings.update.desc",
+      "required": false,
+      "defaultValue": 1000,
+      "min": 500
+    },
+    {
       "type": "checkbox",
       "name": "cpu_metrics",
       "label": "settings.cpu.title",
