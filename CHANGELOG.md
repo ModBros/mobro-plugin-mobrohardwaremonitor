@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added Program.cs to run and test the plugin locally
 - Expose update frequency as settings
+- Added top processes (by cpu or memory usage) as metrics
 
 ### Changed
 

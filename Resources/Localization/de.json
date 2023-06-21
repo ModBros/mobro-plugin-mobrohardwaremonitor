@@ -11,6 +11,12 @@
   "metrics.system.hostname.desc": "Der Hostname des Systems",
   "metrics.system.time.title": "Systemzeit",
   "metrics.system.time.desc": "Die aktuelle Zeit des Systems",
+  "metrics.system.process.name.title": "Prozessname",
+  "metrics.system.process.name.desc": "Der Name des Prozesses",
+  "metrics.system.process.cpu.title": "CPU-Auslastung",
+  "metrics.system.process.cpu.desc": "Die CPU-Auslastung des Prozesses",
+  "metrics.system.process.memory.title": "Speichernutzung",
+  "metrics.system.process.memory.desc": "Die Speichernutzung des Prozesses",
 
   "metrics.cpu.name.title": "Bezeichnung",
   "metrics.cpu.name.desc": "Die Bezeichnung des Prozessors",
@@ -66,5 +72,11 @@
   "settings.gpu.desc": "Ob Metriken zur Grafikkarte (GPU) aufgezeichnet werden",
   "settings.gpu.title": "Grafikkarte",
   "settings.ram.desc": "Ob Metriken zum Arbeitsspeicher (RAM) aufgezeichnet werden",
-  "settings.ram.title": "Arbeitsspeicher"
+  "settings.ram.title": "Arbeitsspeicher",
+  "settings.num_processes.desc": "Anzahl der aufzuzeichneden Prozesse",
+  "settings.num_processes.title": "Prozesse",
+  "settings.processes_sort.desc": "Sortierung der aufgezeichneten Prozesse",
+  "settings.processes_sort.title": "Prozesssortierung",
+  "settings.processes_sort.option_cpu": "CPU-Auslastung",
+  "settings.processes_sort.option_ram": "Speichernutzung"
 }

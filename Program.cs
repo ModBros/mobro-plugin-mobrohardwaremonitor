@@ -11,7 +11,9 @@ var plugin = MoBroPluginBuilder
   {
     ["cpu_metrics"] = "true",
     ["gpu_metrics"] = "true",
-    ["ram_metrics"] = "true"
+    ["ram_metrics"] = "true",
+    ["num_processes"] = "5",
+    ["processes_sort"] = "cpu"
   })
   .Build();
 

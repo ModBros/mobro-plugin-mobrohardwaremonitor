@@ -46,6 +46,9 @@ internal static class Ids
     internal const string User = "system.user";
     internal const string Hostname = "system.hostname";
     internal const string Time = "system.time";
+    internal const string ProcessName = "system.process.name";
+    internal const string ProcessCpu = "system.process.cpu";
+    internal const string ProcessMemory = "system.process.memory";
   }
 
   internal static class Groups
@@ -55,5 +58,6 @@ internal static class Ids
     internal const string GpuGroupIndividual = "group.gpu";
     internal const string MemoryGroupIndividual = "group.memory";
     internal const string MemoryGroupOverall = "group.memory.overall";
+    internal const string ProcessGroupIndividual = "group.process";
   }
 }

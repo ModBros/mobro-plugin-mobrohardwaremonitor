@@ -71,6 +71,34 @@
       "description": "settings.ram.desc",
       "defaultValue": true,
       "required": false
+    },
+    {
+      "type": "number",
+      "name": "num_processes",
+      "label": "settings.num_processes.title",
+      "description": "settings.num_processes.desc",
+      "required": false,
+      "defaultValue": 5,
+      "min": 0,
+      "max": 20
+    },
+    {
+      "type": "select",
+      "name": "processes_sort",
+      "label": "settings.processes_sort.title",
+      "description": "settings.processes_sort.desc",
+      "required": false,
+      "defaultValue": "cpu",
+      "options": [
+        {
+          "label": "settings.processes_sort.option_cpu",
+          "value": "cpu"
+        },
+        {
+          "label": "settings.processes_sort.option_ram",
+          "value": "ram"
+        }
+      ]
     }
   ]
 }

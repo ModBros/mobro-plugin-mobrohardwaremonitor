@@ -18,6 +18,9 @@ internal class HardwareMonitor : IHardwareMonitor
   private readonly Dictionary<int, List<PerformanceCounter>> _gpuUsage3DCounters;
   private readonly Dictionary<int, List<PerformanceCounter>> _gpuMemoryCounters;
 
+  private readonly Dictionary<int, double> _processCpuUsage = new();
+  private long _lastClockTicks = long.MaxValue;
+
   public HardwareMonitor()
   {
     _cpuUsageCounter = new PerformanceCounter("Processor Information", "% Processor Time", "_Total", true);
@@ -101,6 +104,61 @@ internal class HardwareMonitor : IHardwareMonitor
         now
       );
     });
+  }
+
+  public IEnumerable<TopProcessesStats> GetProcessesStats(int count, string sort)
+  {
+    var now = DateTime.UtcNow;
+    var topProcesses = Process.GetProcesses()
+      .Select(p => Tuple.Create(p, GetCpuUsage(now.Ticks, p)))
+      .OrderByDescending(t => sort switch
+      {
+        "cpu" => t.Item2,
+        "ram" => t.Item1.PrivateMemorySize64,
+        _ => t.Item1.Id
+      })
+      .Take(count)
+      .ToArray();
+
+    _lastClockTicks = now.Ticks;
+
+    for (var i = 0; i < topProcesses.Length; i++)
+    {
+      yield return new TopProcessesStats(
+        i,
+        topProcesses[i].Item1.ProcessName,
+        topProcesses[i].Item2,
+        topProcesses[i].Item1.PrivateMemorySize64,
+        now
+      );
+    }
+  }
+
+  private double GetCpuUsage(long nowTicks, Process process)
+  {
+    long cpuTime;
+    try
+    {
+      cpuTime = process.TotalProcessorTime.Ticks;
+    }
+    catch (Exception)
+    {
+      return 0D;
+    }
+
+    var cpuUsage = 0D;
+    if (_processCpuUsage.TryGetValue(process.Id, out var lastCpuTime))
+    {
+      var cpuDelta = cpuTime - lastCpuTime;
+      var wallClockDelta = nowTicks - _lastClockTicks;
+      if (wallClockDelta > 0)
+      {
+        cpuUsage = cpuDelta / wallClockDelta / Environment.ProcessorCount;
+      }
+    }
+
+    _processCpuUsage[process.Id] = cpuTime;
+    return cpuUsage * 100;
   }
 
   private Dictionary<int, List<PerformanceCounter>> GroupGpuCounters(string category, string counter,

@@ -11,6 +11,12 @@
   "metrics.system.hostname.desc": "The hostname of the system",
   "metrics.system.time.title": "System time",
   "metrics.system.time.desc": "The current date and time of the system",
+  "metrics.system.process.name.title": "Process name",
+  "metrics.system.process.name.desc": "The name of the process",
+  "metrics.system.process.cpu.title": "Cpu usage",
+  "metrics.system.process.cpu.desc": "The cpu usage of the process",
+  "metrics.system.process.memory.title": "Memory usage",
+  "metrics.system.process.memory.desc": "The memory usage of the process",
 
   "metrics.cpu.name.title": "Name",
   "metrics.cpu.name.desc": "The name of the systems CPU",
@@ -66,5 +72,11 @@
   "settings.gpu.desc": "Whether graphics card (GPU) metrics are recorded",
   "settings.gpu.title": "Graphics card",
   "settings.ram.desc": "Whether system memory (RAM) metrics are recorded",
-  "settings.ram.title": "Memory"
+  "settings.ram.title": "Memory",
+  "settings.num_processes.desc": "How many processes to record",
+  "settings.num_processes.title": "Processes",
+  "settings.processes_sort.desc": "How to sort the recorded processes",
+  "settings.processes_sort.title": "Processes sort",
+  "settings.processes_sort.option_cpu": "CPU usage",
+  "settings.processes_sort.option_ram": "Memory usage"
 }

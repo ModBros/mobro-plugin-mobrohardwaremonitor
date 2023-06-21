@@ -9,4 +9,5 @@ internal interface IHardwareMonitor
   public ProcessorStats GetProcessor();
   public MemoryStats GetMemory();
   public IEnumerable<GraphicsStats> GetGraphics();
+  public IEnumerable<TopProcessesStats> GetProcessesStats(int count, string sort);
 }
