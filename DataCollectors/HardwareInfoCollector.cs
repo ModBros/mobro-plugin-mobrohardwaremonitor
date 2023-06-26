@@ -18,7 +18,9 @@ internal class HardwareInfoCollector : IHardwareInfoCollector
   {
     ReturnImmediately = true,
     Rewindable = false,
-    Timeout = TimeSpan.FromSeconds(5)
+    EnumerateDeep = false,
+    DirectRead = true,
+    Timeout = TimeSpan.FromSeconds(2)
   };
 
   public IEnumerable<GraphicsInfo> GetGraphics()
