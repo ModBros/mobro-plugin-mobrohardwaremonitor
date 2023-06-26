@@ -78,7 +78,7 @@
       "label": "settings.num_processes.title",
       "description": "settings.num_processes.desc",
       "required": false,
-      "defaultValue": 5,
+      "defaultValue": 0,
       "min": 0,
       "max": 20
     },

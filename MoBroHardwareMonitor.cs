@@ -36,7 +36,7 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
     _monitorCpu = settings.GetValue<bool>("cpu_metrics", true);
     _monitorGpu = settings.GetValue<bool>("gpu_metrics", true);
     _monitorRam = settings.GetValue<bool>("ram_metrics", true);
-    _numProcesses = settings.GetValue<int>("num_processes", 5);
+    _numProcesses = settings.GetValue<int>("num_processes", 0);
     _processesSort = settings.GetValue<string>("processes_sort", "cpu");
   }
 
