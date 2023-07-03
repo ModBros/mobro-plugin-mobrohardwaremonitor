@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MoBro.Plugin.MoBroHardwareMonitor;
-using MoBro.Plugin.SDK.Testing;
+using MoBro.Plugin.SDK;
 using Serilog.Events;
 
 var plugin = MoBroPluginBuilder
