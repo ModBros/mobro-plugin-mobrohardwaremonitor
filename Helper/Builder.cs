@@ -1,14 +1,14 @@
 using System;
 using MoBro.Plugin.SDK.Builders;
 using MoBro.Plugin.SDK.Enums;
-using MoBro.Plugin.SDK.Models;
+using MoBro.Plugin.SDK.Models.Categories;
 using MoBro.Plugin.SDK.Models.Metrics;
 
 namespace MoBro.Plugin.MoBroHardwareMonitor.Helper;
 
 internal class Builder
 {
-  public static IMetric StaticMetric(
+  public static Metric StaticMetric(
     string id,
     CoreMetricType type,
     CoreCategory category,
@@ -27,7 +27,7 @@ internal class Builder
       .Build();
   }
 
-  public static IMetric DynamicMetric(
+  public static Metric DynamicMetric(
     string id,
     CoreMetricType type,
     CoreCategory category,
@@ -46,7 +46,7 @@ internal class Builder
       .Build();
   }
 
-  public static IGroup Group(string id, string label, string? desc = null, int? index = null)
+  public static Group Group(string id, string label, string? desc = null, int? index = null)
   {
     return MoBroItem
       .CreateGroup()

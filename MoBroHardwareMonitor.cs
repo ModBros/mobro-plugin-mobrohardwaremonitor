@@ -91,8 +91,4 @@ public sealed class MoBroHardwareMonitor : IMoBroPlugin
       _service.UpdateMetricValue(metricValue);
     }
   }
-
-  public void Dispose()
-  {
-  }
 }
