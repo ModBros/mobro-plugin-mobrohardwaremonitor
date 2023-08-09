@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management;
-using Microsoft.Win32;
+using System.Runtime.InteropServices;
 using MoBro.Plugin.MoBroHardwareMonitor.Model.Static;
 
 namespace MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
@@ -62,15 +63,18 @@ internal class HardwareInfoCollector : IHardwareInfoCollector
 
   public SystemInfo GetSystem()
   {
-    const string hklmWinNtCurrent = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion";
-    var osName = Registry.GetValue(hklmWinNtCurrent, "productName", "")?.ToString();
-    // var osRelease = Registry.GetValue(HKLMWinNTCurrent, "ReleaseId", "")?.ToString();
+    var osName = new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem")
+      .Get()
+      .Cast<ManagementObject>()
+      .Select(x => x.GetPropertyValue("Caption"))
+      .FirstOrDefault()
+      ?.ToString() ?? "Unknown";
+
     var osVersion = Environment.OSVersion.Version.ToString();
     var osType = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
-    // var osBuild = Registry.GetValue(HKLMWinNTCurrent, "CurrentBuildNumber", "")?.ToString();
 
     return new SystemInfo(
-      osName ?? "Unknown",
+      osName,
       osVersion,
       osType,
       Environment.UserName,
