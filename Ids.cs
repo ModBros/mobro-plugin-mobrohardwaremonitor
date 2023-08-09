@@ -43,6 +43,7 @@ internal static class Ids
     internal const string OsName = "system.osname";
     internal const string OsVersion = "system.osversion";
     internal const string OsType = "system.ostype";
+    internal const string OsArchitecture = "system.osarchitecture";
     internal const string User = "system.user";
     internal const string Hostname = "system.hostname";
     internal const string Time = "system.time";

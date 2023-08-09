@@ -11,6 +11,7 @@ internal readonly record struct SystemInfo(
   string OsName,
   string OsVersion,
   string OsType,
+  string OsArchitecture,
   string User,
   string HostName,
   DateTime DateTime
@@ -21,6 +22,7 @@ internal readonly record struct SystemInfo(
     yield return Builder.StaticMetric(Ids.System.OsName, CoreMetricType.Text, CoreCategory.System);
     yield return Builder.StaticMetric(Ids.System.OsVersion, CoreMetricType.Text, CoreCategory.System);
     yield return Builder.StaticMetric(Ids.System.OsType, CoreMetricType.Text, CoreCategory.System);
+    yield return Builder.StaticMetric(Ids.System.OsArchitecture, CoreMetricType.Text, CoreCategory.System);
     yield return Builder.StaticMetric(Ids.System.User, CoreMetricType.Text, CoreCategory.System);
     yield return Builder.StaticMetric(Ids.System.Hostname, CoreMetricType.Text, CoreCategory.System);
   }
@@ -30,6 +32,7 @@ internal readonly record struct SystemInfo(
     yield return Builder.Value(Ids.System.OsName, DateTime, OsName);
     yield return Builder.Value(Ids.System.OsVersion, DateTime, OsVersion);
     yield return Builder.Value(Ids.System.OsType, DateTime, OsType);
+    yield return Builder.Value(Ids.System.OsArchitecture, DateTime, OsArchitecture);
     yield return Builder.Value(Ids.System.User, DateTime, User);
     yield return Builder.Value(Ids.System.Hostname, DateTime, HostName);
   }

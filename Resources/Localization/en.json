@@ -5,6 +5,8 @@
   "metrics.system.osversion.desc": "The specific version of the operating system",
   "metrics.system.ostype.title": "Type",
   "metrics.system.ostype.desc": "The type of the operating system (32bit/64bit)",
+  "metrics.system.osarchitecture.title": "Architecture",
+  "metrics.system.osarchitecture.desc": "The platform architecture",
   "metrics.system.user.title": "User",
   "metrics.system.user.desc": "The user currently logged in",
   "metrics.system.hostname.title": "Hostname",

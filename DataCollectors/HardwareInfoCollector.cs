@@ -72,11 +72,13 @@ internal class HardwareInfoCollector : IHardwareInfoCollector
 
     var osVersion = Environment.OSVersion.Version.ToString();
     var osType = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
+    var osArchitecture = RuntimeInformation.OSArchitecture.ToString();
 
     return new SystemInfo(
       osName,
       osVersion,
       osType,
+      osArchitecture,
       Environment.UserName,
       Environment.MachineName,
       DateTime.UtcNow

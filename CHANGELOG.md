@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.2.2 - 2023-08-10
 
+### Added
+
+- Metric for platform architecture
+
 ### Fixed
 
 - OS name showing as Win10 on Win11
