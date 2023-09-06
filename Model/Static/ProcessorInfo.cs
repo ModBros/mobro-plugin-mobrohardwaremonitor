@@ -39,10 +39,46 @@ internal readonly record struct ProcessorInfo(
 
   public IEnumerable<MetricValue> ToMetricValues()
   {
-    yield return Builder.Value(Ids.Cpu.Name, DateTime, Name, Index);
-    yield return Builder.Value(Ids.Cpu.Manufacturer, DateTime, Manufacturer, Index);
+    yield return Builder.Value(Ids.Cpu.Name, DateTime, SanitizedName(), Index);
+    yield return Builder.Value(Ids.Cpu.Manufacturer, DateTime, SanitizedManufacturerName(), Index);
     yield return Builder.Value(Ids.Cpu.Cores, DateTime, Cores, Index);
     yield return Builder.Value(Ids.Cpu.LogicalProcessors, DateTime, LogicalProcessors, Index);
     yield return Builder.Value(Ids.Cpu.MaxClockSpeed, DateTime, MaxClockSpeed, Index);
+  }
+
+  private string SanitizedManufacturerName() => Manufacturer.Trim() switch
+  {
+    "GenuineIntel" => "Intel",
+    "AuthenticAMD" => "AMD",
+    _ => Manufacturer
+  };
+
+  private string SanitizedName()
+  {
+    StringBuilder builder = new(Name);
+    builder.Replace("(R)", string.Empty);
+    builder.Replace("(TM)", string.Empty);
+    builder.Replace("(tm)", string.Empty);
+    builder.Replace("CPU", string.Empty);
+    builder.Replace("Dual-Core Processor", string.Empty);
+    builder.Replace("Triple-Core Processor", string.Empty);
+    builder.Replace("Quad-Core Processor", string.Empty);
+    builder.Replace("Six-Core Processor", string.Empty);
+    builder.Replace("Eight-Core Processor", string.Empty);
+    builder.Replace("Twelve-Core Processor", string.Empty);
+    builder.Replace("Sixteen-Core Processor", string.Empty);
+    builder.Replace("6-Core Processor", string.Empty);
+    builder.Replace("8-Core Processor", string.Empty);
+    builder.Replace("12-Core Processor", string.Empty);
+    builder.Replace("16-Core Processor", string.Empty);
+    builder.Replace("24-Core Processor", string.Empty);
+    builder.Replace("32-Core Processor", string.Empty);
+    builder.Replace("64-Core Processor", string.Empty);
+    builder.Replace("  ", " ");
+
+    var sanitizedName = builder.ToString();
+    return sanitizedName.Contains('@') 
+      ? sanitizedName.Remove(sanitizedName.LastIndexOf('@')).Trim() 
+      : sanitizedName.Trim();
   }
 }
