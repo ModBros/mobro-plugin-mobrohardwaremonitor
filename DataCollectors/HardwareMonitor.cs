@@ -12,8 +12,8 @@ internal class HardwareMonitor : IHardwareMonitor
 {
   private static readonly Regex GpuIdxRegex = new(@"\w+phys_(\d)\w*", RegexOptions.Compiled);
 
-  private readonly PerformanceCounter _cpuUsageCounter;
-  private readonly PerformanceCounter _cpuClockCounter;
+  private readonly PerformanceCounter? _cpuUsageCounter;
+  private readonly PerformanceCounter? _cpuClockCounter;
 
   private readonly Dictionary<int, List<PerformanceCounter>> _gpuUsage3DCounters;
   private readonly Dictionary<int, List<PerformanceCounter>> _gpuMemoryCounters;
@@ -23,8 +23,18 @@ internal class HardwareMonitor : IHardwareMonitor
 
   public HardwareMonitor()
   {
-    _cpuUsageCounter = new PerformanceCounter("Processor Information", "% Processor Time", "_Total", true);
-    _cpuClockCounter = new PerformanceCounter("Processor Information", "Processor Frequency", "_Total", true);
+    if (PerformanceCounterCategory.Exists("Processor Information"))
+    {
+      if (PerformanceCounterCategory.CounterExists("% Processor Time", "Processor Information"))
+      {
+        _cpuUsageCounter = new PerformanceCounter("Processor Information", "% Processor Time", "_Total", true);
+      }
+
+      if (PerformanceCounterCategory.CounterExists("Processor Frequency", "Processor Information"))
+      {
+        _cpuClockCounter = new PerformanceCounter("Processor Information", "Processor Frequency", "_Total", true);
+      }
+    }
 
     _gpuUsage3DCounters = GroupGpuCounters("GPU Engine", "Utilization Percentage", "engtype_3D");
     _gpuMemoryCounters = GroupGpuCounters("GPU Adapter Memory", "Dedicated Usage");
@@ -41,8 +51,8 @@ internal class HardwareMonitor : IHardwareMonitor
   public ProcessorStats GetProcessor()
   {
     return new ProcessorStats(
-      Usage: _cpuUsageCounter.NextValue(),
-      Clock: _cpuClockCounter.NextValue() * 1_000_000, // convert to Hz
+      Usage: _cpuUsageCounter?.NextValue() ?? -1,
+      Clock: _cpuClockCounter?.NextValue() * 1_000_000 ?? -1, // convert to Hz
       DateTime.UtcNow
     );
   }

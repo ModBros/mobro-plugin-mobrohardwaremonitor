@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Sanitize manufacturer name for CPUs and GPUs
 - Sanitize CPU name
+- Return metric value of -1 if CPU performance counters are not available instead of failing
 
 ### Fixed
 
