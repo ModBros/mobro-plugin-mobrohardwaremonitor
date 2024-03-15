@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using MoBro.Plugin.MoBroHardwareMonitor.Helper;
-using MoBro.Plugin.SDK.Builders;
 using MoBro.Plugin.SDK.Enums;
 using MoBro.Plugin.SDK.Models;
 using MoBro.Plugin.SDK.Models.Metrics;
@@ -14,7 +14,7 @@ internal readonly record struct ProcessorInfo(
   string Manufacturer,
   uint Cores,
   uint LogicalProcessors,
-  uint MaxClockSpeed,
+  ulong MaxClockSpeed,
   DateTime DateTime
 ) : IMetricConvertible
 {

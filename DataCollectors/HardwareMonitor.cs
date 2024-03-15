@@ -42,7 +42,7 @@ internal class HardwareMonitor : IHardwareMonitor
   {
     return new ProcessorStats(
       Usage: _cpuUsageCounter.NextValue(),
-      Clock: _cpuClockCounter.NextValue(),
+      Clock: _cpuClockCounter.NextValue() * 1_000_000, // convert to Hz
       DateTime.UtcNow
     );
   }

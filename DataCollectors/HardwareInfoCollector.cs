@@ -55,7 +55,7 @@ internal class HardwareInfoCollector : IHardwareInfoCollector
         GetStringValue(mo["Manufacturer"]),
         GetValue<uint>(mo["NumberOfCores"]),
         GetValue<uint>(mo["NumberOfLogicalProcessors"]),
-        GetValue<uint>(mo["MaxClockSpeed"]) * 1_000_000, // convert to Hz
+        GetValue<uint>(mo["MaxClockSpeed"]) * 1_000_000UL, // convert to Hz
         now
       );
     }

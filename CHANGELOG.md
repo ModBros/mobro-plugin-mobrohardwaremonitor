@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sanitize manufacturer name for CPUs and GPUs
 - Sanitize CPU name
 
+### Fixed
+
+- Clock speed metric values were not correctly converted to base unit
+
 ## 0.2.2 - 2023-08-21
 
 ### Added
