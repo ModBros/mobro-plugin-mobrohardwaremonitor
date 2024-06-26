@@ -5,14 +5,15 @@ using MoBro.Plugin.SDK;
 using Serilog.Events;
 
 var plugin = MoBroPluginBuilder
-  .Create<MoBroHardwareMonitor>()
+  .Create<Plugin>()
   .WithLogLevel(LogEventLevel.Debug)
   .WithSettings(new Dictionary<string, string>
   {
+    ["update_frequency"] = "10000",
     ["cpu_metrics"] = "true",
     ["gpu_metrics"] = "true",
     ["ram_metrics"] = "true",
-    ["num_processes"] = "5",
+    ["num_processes"] = "0",
     ["processes_sort"] = "cpu"
   })
   .Build();

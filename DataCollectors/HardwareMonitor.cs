@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using LibreHardwareMonitor.Hardware;
+using MoBro.Plugin.MoBroHardwareMonitor.Extensions;
 using MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
 
 namespace MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
@@ -12,32 +14,18 @@ internal class HardwareMonitor : IHardwareMonitor
 {
   private static readonly Regex GpuIdxRegex = new(@"\w+phys_(\d)\w*", RegexOptions.Compiled);
 
-  private readonly PerformanceCounter? _cpuUsageCounter;
-  private readonly PerformanceCounter? _cpuClockCounter;
-
-  private readonly Dictionary<int, List<PerformanceCounter>> _gpuUsage3DCounters;
-  private readonly Dictionary<int, List<PerformanceCounter>> _gpuMemoryCounters;
+  private readonly IHardware[] _cpus;
+  private readonly IHardware[] _gpus;
 
   private readonly Dictionary<int, double> _processCpuUsage = new();
   private long _lastClockTicks = long.MaxValue;
 
-  public HardwareMonitor()
+  public HardwareMonitor(Computer computer)
   {
-    if (PerformanceCounterCategory.Exists("Processor Information"))
-    {
-      if (PerformanceCounterCategory.CounterExists("% Processor Time", "Processor Information"))
-      {
-        _cpuUsageCounter = new PerformanceCounter("Processor Information", "% Processor Time", "_Total", true);
-      }
-
-      if (PerformanceCounterCategory.CounterExists("Processor Frequency", "Processor Information"))
-      {
-        _cpuClockCounter = new PerformanceCounter("Processor Information", "Processor Frequency", "_Total", true);
-      }
-    }
-
-    _gpuUsage3DCounters = GroupGpuCounters("GPU Engine", "Utilization Percentage", "engtype_3D");
-    _gpuMemoryCounters = GroupGpuCounters("GPU Adapter Memory", "Dedicated Usage");
+    _cpus = computer.Hardware.Where(h => HardwareType.Cpu == h.HardwareType).ToArray();
+    _gpus = computer.Hardware
+      .Where(h => h.HardwareType is HardwareType.GpuAmd or HardwareType.GpuNvidia or HardwareType.GpuIntel)
+      .ToArray();
   }
 
   public SystemStats GetSystem()
@@ -48,13 +36,20 @@ internal class HardwareMonitor : IHardwareMonitor
     );
   }
 
-  public ProcessorStats GetProcessor()
+  public IEnumerable<ProcessorStats> GetProcessors()
   {
-    return new ProcessorStats(
-      Usage: _cpuUsageCounter?.NextValue() ?? -1,
-      Clock: _cpuClockCounter?.NextValue() * 1_000_000 ?? -1, // convert to Hz
-      DateTime.UtcNow
-    );
+    var now = DateTime.UtcNow;
+    for (var i = 0; i < _cpus.Length; i++)
+    {
+      _cpus[i].Update();
+      yield return new ProcessorStats(
+        Index: i,
+        Load: _cpus[i].Sensors.ValueOf(SensorType.Load, "total"),
+        Temperature: _cpus[i].Sensors.ValueOf(SensorType.Temperature, "package"),
+        Power: _cpus[i].Sensors.ValueOf(SensorType.Power, "package"),
+        DateTime: now
+      );
+    }
   }
 
   public MemoryStats GetMemory()
@@ -65,7 +60,7 @@ internal class HardwareMonitor : IHardwareMonitor
       Capacity: info.ullTotalPhys,
       Available: info.ullAvailPhys,
       Used: ullUsedPhys,
-      Usage: ullUsedPhys / (double)info.ullTotalPhys,
+      Usage: (ullUsedPhys / (double)info.ullTotalPhys) * 100,
       DateTime.UtcNow
     );
   }
@@ -73,47 +68,18 @@ internal class HardwareMonitor : IHardwareMonitor
   public IEnumerable<GraphicsStats> GetGraphics()
   {
     var now = DateTime.UtcNow;
-    return _gpuUsage3DCounters.Keys.Select(idx =>
+    for (var i = 0; i < _gpus.Length; i++)
     {
-      var usage3D = 0D;
-      var usageMemory = 0UL;
-      if (_gpuUsage3DCounters.TryGetValue(idx, out var uCounters))
-      {
-        foreach (var counter in uCounters)
-        {
-          try
-          {
-            usage3D += counter.NextValue();
-          }
-          catch (Exception)
-          {
-            // ignored
-          }
-        }
-      }
-
-      if (_gpuMemoryCounters.TryGetValue(idx, out var mCounters))
-      {
-        foreach (var c in mCounters)
-        {
-          try
-          {
-            usageMemory += (ulong)c.NextValue();
-          }
-          catch (Exception)
-          {
-            // ignored
-          }
-        }
-      }
-
-      return new GraphicsStats(
-        Index: idx,
-        Usage3D: usage3D,
-        UsedMemory: usageMemory,
-        now
+      _gpus[i].Update();
+      yield return new GraphicsStats(
+        Index: i,
+        CoreLoad: _gpus[i].Sensors.ValueOf(SensorType.Load, "core"),
+        MemoryLoad: _gpus[i].Sensors.ValueOf(SensorType.Load, "memory"),
+        Temperature: _gpus[i].Sensors.ValueOf(SensorType.Temperature),
+        Power: _gpus[i].Sensors.ValueOf(SensorType.Power),
+        DateTime: now
       );
-    });
+    }
   }
 
   public IEnumerable<TopProcessesStats> GetProcessesStats(int count, string sort)

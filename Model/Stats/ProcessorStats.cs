@@ -8,8 +8,10 @@ using MoBro.Plugin.SDK.Models.Metrics;
 namespace MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
 
 internal readonly record struct ProcessorStats(
-  double Usage,
-  double Clock,
+  int Index,
+  double Load,
+  double Temperature,
+  double Power,
   DateTime DateTime
 ) : IMetricConvertible
 {
@@ -19,14 +21,17 @@ internal readonly record struct ProcessorStats(
 
     // register dynamic metrics
     yield return Builder.DynamicMetric(
-      Ids.Cpu.TotalUsage, CoreMetricType.Usage, CoreCategory.Cpu, Ids.Groups.CpuGroupOverall);
+      Ids.Cpu.TotalUsage, CoreMetricType.Usage, CoreCategory.Cpu, Ids.Groups.CpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
-      Ids.Cpu.TotalClock, CoreMetricType.Frequency, CoreCategory.Cpu, Ids.Groups.CpuGroupOverall);
+      Ids.Cpu.TotalTemperature, CoreMetricType.Temperature, CoreCategory.Cpu, Ids.Groups.CpuGroupIndividual, Index);
+    yield return Builder.DynamicMetric(
+      Ids.Cpu.TotalPower, CoreMetricType.Power, CoreCategory.Cpu, Ids.Groups.CpuGroupIndividual, Index);
   }
 
   public IEnumerable<MetricValue> ToMetricValues()
   {
-    yield return Builder.Value(Ids.Cpu.TotalUsage, DateTime, Usage);
-    yield return Builder.Value(Ids.Cpu.TotalClock, DateTime, Clock);
+    yield return Builder.Value(Ids.Cpu.TotalUsage, DateTime, Load, Index);
+    yield return Builder.Value(Ids.Cpu.TotalTemperature, DateTime, Temperature, Index);
+    yield return Builder.Value(Ids.Cpu.TotalPower, DateTime, Power, Index);
   }
 }

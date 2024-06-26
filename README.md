@@ -7,9 +7,12 @@
 
 **Basic data plugin for MoBro**
 
-This plugin integrates basic PC hardware metrics into [MoBro](https://mobro.app).  
-The plugin does not rely on any 3rd party libraries or applications. It reads metrics directly from APIs available
-within Windows.
+This plugin provides standard hardware metrics to [MoBro](https://mobro.app) available on every PC regardless of the
+actual hardware.  
+This plugin does not provide hardware specific metrics like individual core temperatures, loads etc.
+
+Metrics are read directly from APIs available within Windows and
+the [LibreHardwareMonitorLib](https://www.nuget.org/packages/LibreHardwareMonitorLib/).
 
 ## SDK
 

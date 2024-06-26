@@ -9,8 +9,10 @@ namespace MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
 
 internal readonly record struct GraphicsStats(
   int Index,
-  double Usage3D,
-  ulong UsedMemory,
+  double CoreLoad,
+  double MemoryLoad,
+  double Power,
+  double Temperature,
   DateTime DateTime
 ) : IMetricConvertible
 {
@@ -20,14 +22,20 @@ internal readonly record struct GraphicsStats(
 
     // register dynamic metrics
     yield return Builder.DynamicMetric(
-      Ids.Gpu.Usage3D, CoreMetricType.Usage, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+      Ids.Gpu.UsageCore, CoreMetricType.Usage, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
-      Ids.Gpu.UsedMemory, CoreMetricType.Data, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+      Ids.Gpu.UsageMemory, CoreMetricType.Data, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+    yield return Builder.DynamicMetric(
+      Ids.Gpu.Power, CoreMetricType.Power, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+    yield return Builder.DynamicMetric(
+      Ids.Gpu.Temperature, CoreMetricType.Temperature, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
   }
 
   public IEnumerable<MetricValue> ToMetricValues()
   {
-    yield return Builder.Value(Ids.Gpu.Usage3D, DateTime, Usage3D, Index);
-    yield return Builder.Value(Ids.Gpu.UsedMemory, DateTime, UsedMemory, Index);
+    yield return Builder.Value(Ids.Gpu.UsageCore, DateTime, CoreLoad, Index);
+    yield return Builder.Value(Ids.Gpu.UsageMemory, DateTime, MemoryLoad, Index);
+    yield return Builder.Value(Ids.Gpu.Power, DateTime, Power, Index);
+    yield return Builder.Value(Ids.Gpu.Temperature, DateTime, Temperature, Index);
   }
 }

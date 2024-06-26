@@ -22,7 +22,6 @@ internal readonly record struct ProcessorInfo(
   {
     // register groups first
     yield return Builder.Group(Ids.Groups.CpuGroupIndividual, $"{Name} [{Index}]", null, Index);
-    yield return Builder.Group(Ids.Groups.CpuGroupOverall, "CPU");
 
     // register static metrics
     yield return Builder.StaticMetric(
