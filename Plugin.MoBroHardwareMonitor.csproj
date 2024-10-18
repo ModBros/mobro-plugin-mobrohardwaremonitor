@@ -4,14 +4,14 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <RootNamespace>MoBro.Plugin.MoBroHardwareMonitor</RootNamespace>
         <Authors>ModBros</Authors>
-        <Company>ModBros OG</Company>
+        <Company>ModBros KG</Company>
         <Product>MoBro</Product>
         <Description>Hardware monitoring plugin for MoBro</Description>
         <IsPackable>false</IsPackable>
         <Title>MoBro Hardware Monitor Plugin</Title>
-        <Copyright>(C) ModBros OG 2023</Copyright>
-        <PackageProjectUrl>www.mod-bros.com</PackageProjectUrl>
         <VersionPrefix>0.3.0</VersionPrefix>
+        <Copyright>(C) ModBros KG 2024</Copyright>
+        <PackageProjectUrl>https://mobro.app</PackageProjectUrl>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <EnableDynamicLoading>true</EnableDynamicLoading>
