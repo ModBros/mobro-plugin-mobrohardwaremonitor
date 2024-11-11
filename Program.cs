@@ -4,7 +4,7 @@ using MoBro.Plugin.MoBroHardwareMonitor;
 using MoBro.Plugin.SDK;
 using Serilog.Events;
 
-var plugin = MoBroPluginBuilder
+using var plugin = MoBroPluginBuilder
   .Create<Plugin>()
   .WithLogLevel(LogEventLevel.Debug)
   .WithSettings(new Dictionary<string, string>

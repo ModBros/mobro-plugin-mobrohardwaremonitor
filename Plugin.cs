@@ -16,9 +16,10 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
 
   private readonly IMoBroService _service;
   private readonly IMoBroScheduler _scheduler;
-  private IHardwareInfoCollector _hardwareInfoCollector;
-  private IHardwareMonitor _hardwareMonitor;
-  private Computer _computer;
+
+  private IHardwareInfoCollector? _hardwareInfoCollector;
+  private IHardwareMonitor? _hardwareMonitor;
+  private Computer? _computer;
 
   private readonly int _updateFrequency;
   private readonly bool _monitorCpu;
@@ -79,6 +80,8 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
 
   private void Update()
   {
+    if (_hardwareMonitor is null) return;
+
     _service.UpdateMetricValues(_hardwareMonitor.GetSystem().ToMetricValues());
 
     if (_monitorCpu) _service.UpdateMetricValues(_hardwareMonitor.GetProcessors().SelectMany(c => c.ToMetricValues()));
@@ -112,6 +115,6 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
 
   public void Dispose()
   {
-    _computer.Close();
+    _computer?.Close();
   }
 }
