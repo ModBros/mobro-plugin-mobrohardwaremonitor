@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using LibreHardwareMonitor.Hardware;
 using MoBro.Plugin.MoBroHardwareMonitor.Extensions;
 using MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
@@ -12,8 +11,6 @@ namespace MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
 
 internal class HardwareMonitor : IHardwareMonitor
 {
-  private static readonly Regex GpuIdxRegex = new(@"\w+phys_(\d)\w*", RegexOptions.Compiled);
-
   private readonly IHardware[] _cpus;
   private readonly IHardware[] _gpus;
 
@@ -135,37 +132,6 @@ internal class HardwareMonitor : IHardwareMonitor
 
     _processCpuUsage[process.Id] = cpuTime;
     return cpuUsage * 100;
-  }
-
-  private Dictionary<int, List<PerformanceCounter>> GroupGpuCounters(string category, string counter,
-    string? instanceEndsWith = null)
-  {
-    Dictionary<int, List<PerformanceCounter>> groupedCounters = new();
-
-
-    if (!PerformanceCounterCategory.Exists(category) ||
-        !PerformanceCounterCategory.CounterExists(counter, category)) return groupedCounters;
-
-    var perfCounterCategory = new PerformanceCounterCategory(category);
-    foreach (var counterName in perfCounterCategory.GetInstanceNames())
-    {
-      if (instanceEndsWith != null && !counterName.EndsWith(instanceEndsWith)) continue;
-
-      var match = GpuIdxRegex.Match(counterName);
-      if (!match.Success) continue;
-      var idx = int.Parse(match.Groups[1].ToString());
-      if (!groupedCounters.TryGetValue(idx, out var list))
-      {
-        groupedCounters[idx] = list = new List<PerformanceCounter>();
-      }
-
-      list.AddRange(perfCounterCategory
-        .GetCounters(counterName)
-        .Where(c => c.CounterName == counter)
-      );
-    }
-
-    return groupedCounters;
   }
 
   private static MemoryInfo GetMemoryInfo()
