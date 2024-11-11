@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.4.0 - 2024-11-11
 
 ### Added
 
 - Included LibreHardwareMonitor Lib
 - Return metrics for each individual CPU
-- New metrics: GPU temperature, GPU core, GPU, power, GPU memory load, CPU temperature, CPU power
+- New metrics: GPU temperature, GPU core, GPU power, GPU memory load, CPU temperature, CPU power
 
 ### Changed
 

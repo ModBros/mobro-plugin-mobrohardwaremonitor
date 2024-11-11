@@ -9,16 +9,16 @@
         <Description>Hardware monitoring plugin for MoBro</Description>
         <IsPackable>false</IsPackable>
         <Title>MoBro Hardware Monitor Plugin</Title>
-        <VersionPrefix>0.3.0</VersionPrefix>
         <Copyright>(C) ModBros KG 2024</Copyright>
         <PackageProjectUrl>https://mobro.app</PackageProjectUrl>
+        <VersionPrefix>0.4.0</VersionPrefix>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <UseAppHost>false</UseAppHost>
         <SelfContained>false</SelfContained>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <LangVersion>10</LangVersion>
+        <LangVersion>11</LangVersion>
         <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
@@ -40,7 +40,7 @@
         <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="MoBro.Plugin.SDK" Version="0.3.0" PrivateAssets="all" />
-        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
+        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.1" />
         <PackageReference Include="System.Management" Version="8.0.0" />
     </ItemGroup>
 
