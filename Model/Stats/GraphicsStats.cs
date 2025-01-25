@@ -24,7 +24,7 @@ internal readonly record struct GraphicsStats(
     yield return Builder.DynamicMetric(
       Ids.Gpu.UsageCore, CoreMetricType.Usage, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
-      Ids.Gpu.UsageMemory, CoreMetricType.Data, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+      Ids.Gpu.UsageMemory, CoreMetricType.Usage, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
       Ids.Gpu.Power, CoreMetricType.Power, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
