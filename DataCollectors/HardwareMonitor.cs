@@ -72,6 +72,9 @@ internal class HardwareMonitor : IHardwareMonitor
         Index: i,
         CoreLoad: _gpus[i].Sensors.ValueOf(SensorType.Load, "core"),
         MemoryLoad: _gpus[i].Sensors.ValueOf(SensorType.Load, "memory"),
+        MemoryCapacity: (long)_gpus[i].Sensors.ValueOf(SensorType.SmallData, "total"),
+        MemoryAvailable: (long)_gpus[i].Sensors.ValueOf(SensorType.SmallData, "free"),
+        MemoryUsed: (long)_gpus[i].Sensors.ValueOf(SensorType.SmallData, "used"),
         Temperature: _gpus[i].Sensors.ValueOf(SensorType.Temperature),
         Power: _gpus[i].Sensors.ValueOf(SensorType.Power),
         DateTime: now

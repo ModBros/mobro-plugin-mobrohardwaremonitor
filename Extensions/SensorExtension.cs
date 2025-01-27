@@ -18,6 +18,24 @@ public static class SensorExtensions
 
   public static double ValueOf(this ISensor[] sensors, SensorType type, params string[] labels)
   {
-    return sensors.FirstOrDefault(s => s.Is(type, labels))?.Value ?? -1;
+    var value = sensors.FirstOrDefault(s => s.Is(type, labels))?.Value;
+    if (value.HasValue)
+    {
+      return ConvertUnit(type, value.Value);
+    }
+
+    return -1;
+  }
+
+  private static double ConvertUnit(SensorType type, double value)
+  {
+    return type switch
+    {
+      SensorType.Throughput => value * 8, // bytes => bit
+      SensorType.Clock => value * 1_000_000, // MHz => Hertz
+      SensorType.SmallData => value * 1_000_000, // MB => Byte
+      SensorType.Data => value * 1_000_000_000, // GB => Byte
+      _ => value
+    };
   }
 }

@@ -24,7 +24,10 @@ internal static class Ids
     internal const string HorizontalResolution = "gpu.hres";
     internal const string VerticalResolution = "gpu.vres";
     internal const string UsageCore = "gpu.usage.core";
-    internal const string UsageMemory = "gpu.usage.memory";
+    internal const string MemoryUsage = "gpu.memory.usage";
+    internal const string MemoryCapacity = "gpu.memory.capacity";
+    internal const string MemoryAvailable = "gpu.memory.available";
+    internal const string MemoryUsed = "gpu.memory.used";
     internal const string Power = "gpu.power";
     internal const string Temperature = "gpu.temperature";
   }

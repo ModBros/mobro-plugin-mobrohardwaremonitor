@@ -11,6 +11,9 @@ internal readonly record struct GraphicsStats(
   int Index,
   double CoreLoad,
   double MemoryLoad,
+  long MemoryCapacity,
+  long MemoryAvailable,
+  long MemoryUsed,
   double Power,
   double Temperature,
   DateTime DateTime
@@ -24,7 +27,13 @@ internal readonly record struct GraphicsStats(
     yield return Builder.DynamicMetric(
       Ids.Gpu.UsageCore, CoreMetricType.Usage, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
-      Ids.Gpu.UsageMemory, CoreMetricType.Usage, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+      Ids.Gpu.MemoryUsage, CoreMetricType.Usage, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+    yield return Builder.DynamicMetric(
+      Ids.Gpu.MemoryCapacity, CoreMetricType.Data, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+    yield return Builder.DynamicMetric(
+      Ids.Gpu.MemoryAvailable, CoreMetricType.Data, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
+    yield return Builder.DynamicMetric(
+      Ids.Gpu.MemoryUsed, CoreMetricType.Data, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
       Ids.Gpu.Power, CoreMetricType.Power, CoreCategory.Gpu, Ids.Groups.GpuGroupIndividual, Index);
     yield return Builder.DynamicMetric(
@@ -34,7 +43,10 @@ internal readonly record struct GraphicsStats(
   public IEnumerable<MetricValue> ToMetricValues()
   {
     yield return Builder.Value(Ids.Gpu.UsageCore, DateTime, CoreLoad, Index);
-    yield return Builder.Value(Ids.Gpu.UsageMemory, DateTime, MemoryLoad, Index);
+    yield return Builder.Value(Ids.Gpu.MemoryUsage, DateTime, MemoryLoad, Index);
+    yield return Builder.Value(Ids.Gpu.MemoryCapacity, DateTime, MemoryCapacity, Index);
+    yield return Builder.Value(Ids.Gpu.MemoryAvailable, DateTime, MemoryAvailable, Index);
+    yield return Builder.Value(Ids.Gpu.MemoryUsed, DateTime, MemoryUsed, Index);
     yield return Builder.Value(Ids.Gpu.Power, DateTime, Power, Index);
     yield return Builder.Value(Ids.Gpu.Temperature, DateTime, Temperature, Index);
   }
