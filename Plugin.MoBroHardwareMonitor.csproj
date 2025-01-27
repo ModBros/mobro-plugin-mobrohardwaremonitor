@@ -9,9 +9,9 @@
         <Description>Hardware monitoring plugin for MoBro</Description>
         <IsPackable>false</IsPackable>
         <Title>MoBro Hardware Monitor Plugin</Title>
-        <Copyright>(C) ModBros KG 2024</Copyright>
+        <Copyright>(C) ModBros KG 2025</Copyright>
         <PackageProjectUrl>https://mobro.app</PackageProjectUrl>
-        <VersionPrefix>0.4.0</VersionPrefix>
+        <VersionPrefix>1.0.0</VersionPrefix>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <EnableDynamicLoading>true</EnableDynamicLoading>
