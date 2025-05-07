@@ -5,21 +5,33 @@
 [![MoBro](https://img.shields.io/badge/-MoBro-red.svg)](https://mobro.app)
 [![Discord](https://img.shields.io/discord/620204412706750466.svg?color=7389D8&labelColor=6A7EC2&logo=discord&logoColor=ffffff&style=flat-square)](https://discord.com/invite/DSNX4ds)
 
-**Basic data plugin for MoBro**
+**Basic Hardware Data Plugin**
 
-This plugin provides standard hardware metrics to [MoBro](https://mobro.app) available on every PC regardless of the
-actual hardware.  
-This plugin does not provide hardware specific metrics like individual core temperatures, loads etc.
+This plugin provides essential hardware metrics for [MoBro](https://mobro.app) that are standard on virtually every PC,
+regardless of its specific hardware configuration.  
+It does **not** offer hardware-specific details, such as individual core temperatures or loads.
 
-Metrics are read directly from APIs available within Windows and
+All metrics are collected directly via Windows APIs or
 the [LibreHardwareMonitorLib](https://www.nuget.org/packages/LibreHardwareMonitorLib/).
+
+## Getting Started
+
+Simply install the plugin in MoBro — no additional configuration required.
+
+## Settings
+
+This plugin offers customizable settings:
+
+| Setting          | Default   | Description                                                                                                                     |
+|------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------|
+| Update frequency | 1000 ms   | The interval (in milliseconds) for reading and updating metrics. Lower values provide faster updates but may increase CPU load. |
+| Processor        | Enabled   | Toggle for including CPU metrics                                                                                                |
+| Graphics card    | Enabled   | Toggle for including GPU metrics                                                                                                |
+| Memory           | Enabled   | Toggle for including memory metrics                                                                                             |
+| Processes        | 0         | Number of processes to monitor                                                                                                  |
+| Processes sort   | CPU usage | Criteria to sort monitored processes                                                                                            |
 
 ## SDK
 
 This plugin is built using the [MoBro Plugin SDK](https://github.com/ModBros/mobro-plugin-sdk).  
 Developer documentation is available at [developer.mobro.app](https://developer.mobro.app).
-
----
-
-Feel free to visit us on our [Discord](https://discord.com/invite/DSNX4ds) or [Forum](https://www.mod-bros.com/en/forum)
-for any questions or in case you run into any issues.
