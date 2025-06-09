@@ -2,9 +2,15 @@
   "name": "modbros_mobrohardwaremonitor",
   "displayName": "MoBro Hardware Monitor",
   "author": "ModBros",
-  "description": null,
+  "description": "A basic hardware monitoring plugin covering the most basic metrics",
   "assembly": "Plugin.MoBroHardwareMonitor.dll",
   "localization": "Resources/Localization",
+  "repository": "https://github.com/ModBros/mobro-plugin-mobrohardwaremonitor",
+  "homepage": null,
+  "tags": [
+    "hardware",
+    "system"
+  ],
   "settings": [
     {
       "type": "select",
