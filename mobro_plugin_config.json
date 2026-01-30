@@ -106,5 +106,15 @@
         }
       ]
     }
+  ],
+  "dependencies": [
+    {
+      "name": "pawnio",
+      "version": "2.0.0+",
+      "label": "dependencies.pawnio.title",
+      "description": "dependencies.pawnio.desc",
+      "required": false,
+      "link": "https://pawnio.eu/"
+    }
   ]
 }

@@ -92,5 +92,7 @@
   "settings.processes_sort.desc": "How to sort the recorded processes",
   "settings.processes_sort.title": "Processes sort",
   "settings.processes_sort.option_cpu": "CPU usage",
-  "settings.processes_sort.option_ram": "Memory usage"
+  "settings.processes_sort.option_ram": "Memory usage",
+  "dependencies.pawnio.desc": "MoBroHardwareMonitor uses PawnIO to read certain hardware sensors. Without this driver, some metrics will not be available.",
+  "dependencies.pawnio.title": "PawnIO"
 }

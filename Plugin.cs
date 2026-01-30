@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LibreHardwareMonitor.Hardware;
 using MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
+using MoBro.Plugin.MoBroHardwareMonitor.Helper;
 using MoBro.Plugin.MoBroHardwareMonitor.Model;
 using MoBro.Plugin.SDK;
 using MoBro.Plugin.SDK.Services;
@@ -43,6 +44,9 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
 
   public void Init()
   {
+    // check PawnIO status 
+    _service.SetDependencyStatus("pawnio", PawnIo.GetStatus());
+
     // init LibreHardwareMonitor
     _computer = new Computer
     {
