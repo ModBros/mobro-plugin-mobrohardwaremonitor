@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LibreHardwareMonitor.Hardware;
+using Microsoft.Extensions.Logging;
 using MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
 using MoBro.Plugin.MoBroHardwareMonitor.Helper;
 using MoBro.Plugin.MoBroHardwareMonitor.Model;
@@ -17,6 +18,7 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
 
   private readonly IMoBroService _service;
   private readonly IMoBroScheduler _scheduler;
+  private readonly ILogger _logger;
 
   private IHardwareInfoCollector? _hardwareInfoCollector;
   private IHardwareMonitor? _hardwareMonitor;
@@ -29,10 +31,11 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
   private readonly int _numProcesses;
   private readonly string _processesSort;
 
-  public Plugin(IMoBroService service, IMoBroSettings settings, IMoBroScheduler scheduler)
+  public Plugin(IMoBroService service, IMoBroSettings settings, IMoBroScheduler scheduler, ILogger logger)
   {
     _service = service;
     _scheduler = scheduler;
+    _logger = logger;
 
     _updateFrequency = settings.GetValue("update_frequency", DefaultUpdateFrequencyMs);
     _monitorCpu = settings.GetValue<bool>("cpu_metrics", true);
@@ -45,9 +48,11 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
   public void Init()
   {
     // check PawnIO status 
+    _logger.LogInformation("Checking PawnIO status");
     _service.SetDependencyStatus("pawnio", PawnIo.GetStatus());
 
     // init LibreHardwareMonitor
+    _logger.LogInformation("Initializing LibreHardwareMonitor");
     _computer = new Computer
     {
       IsCpuEnabled = _monitorCpu,
@@ -63,15 +68,17 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
     _computer.Open();
 
     _hardwareInfoCollector = new HardwareInfoCollector();
-    _hardwareMonitor = new HardwareMonitor(_computer);
+    _hardwareMonitor = new HardwareMonitor(_computer, _scheduler);
 
     // static metrics
+    _logger.LogInformation("Registering static metrics");
     Register(_hardwareInfoCollector.GetSystem());
     Register(_hardwareInfoCollector.GetProcessors());
     Register(_hardwareInfoCollector.GetGraphics());
     Register(_hardwareInfoCollector.GetMemory());
 
     // dynamic metrics
+    _logger.LogInformation("Registering dynamic metrics");
     Register(_hardwareMonitor.GetSystem());
     if (_monitorCpu) Register(_hardwareMonitor.GetProcessors());
     if (_monitorGpu) Register(_hardwareMonitor.GetGraphics());
@@ -79,19 +86,36 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
     if (_numProcesses > 0) Register(_hardwareMonitor.GetProcessesStats(_numProcesses, _processesSort));
 
     // start polling metric values
-    _scheduler.Interval(Update, TimeSpan.FromMilliseconds(_updateFrequency), InitialDelay);
+    _logger.LogInformation("Starting metric polling with interval: {UpdateFrequency}ms", _updateFrequency);
+    _scheduler.Interval(UpdateMetrics, TimeSpan.FromMilliseconds(_updateFrequency), InitialDelay);
   }
 
-  private void Update()
+  private void UpdateMetrics()
   {
     if (_hardwareMonitor is null) return;
 
     _service.UpdateMetricValues(_hardwareMonitor.GetSystem().ToMetricValues());
 
-    if (_monitorCpu) _service.UpdateMetricValues(_hardwareMonitor.GetProcessors().SelectMany(c => c.ToMetricValues()));
-    if (_monitorGpu) _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
-    if (_monitorRam) _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
-    if (_numProcesses > 0) _service.UpdateMetricValues(_hardwareMonitor.GetProcessesStats(_numProcesses, _processesSort) .SelectMany(g => g.ToMetricValues()));
+    if (_monitorCpu)
+    {
+      _service.UpdateMetricValues(_hardwareMonitor.GetProcessors().SelectMany(c => c.ToMetricValues()));
+    }
+
+    if (_monitorGpu)
+    {
+      _service.UpdateMetricValues(_hardwareMonitor.GetGraphics().SelectMany(g => g.ToMetricValues()));
+    }
+
+    if (_monitorRam)
+    {
+      _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
+    }
+
+    if (_numProcesses > 0)
+    {
+      _service.UpdateMetricValues(_hardwareMonitor.GetProcessesStats(_numProcesses, _processesSort)
+        .SelectMany(g => g.ToMetricValues()));
+    }
   }
 
   private void Register<T>(IEnumerable<T> convertibles) where T : IMetricConvertible
