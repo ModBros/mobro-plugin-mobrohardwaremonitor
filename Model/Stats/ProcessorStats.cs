@@ -9,9 +9,9 @@ namespace MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
 
 internal readonly record struct ProcessorStats(
   int Index,
-  double Load,
-  double Temperature,
-  double Power,
+  double? Load,
+  double? Temperature,
+  double? Power,
   DateTime DateTime
 ) : IMetricConvertible
 {

@@ -9,13 +9,13 @@ namespace MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
 
 internal readonly record struct GraphicsStats(
   int Index,
-  double CoreLoad,
-  double MemoryLoad,
-  long MemoryCapacity,
-  long MemoryAvailable,
-  long MemoryUsed,
-  double Power,
-  double Temperature,
+  double? CoreLoad,
+  double? MemoryLoad,
+  long? MemoryCapacity,
+  long? MemoryAvailable,
+  long? MemoryUsed,
+  double? Power,
+  double? Temperature,
   DateTime DateTime
 ) : IMetricConvertible
 {

@@ -55,7 +55,7 @@ internal class Builder
       .Build();
   }
 
-  public static MetricValue Value(string id, DateTime dateTime, object value, int? index = null)
+  public static MetricValue Value(string id, DateTime dateTime, object? value, int? index = null)
   {
     return new MetricValue(Id(id, index)!, dateTime, value);
   }

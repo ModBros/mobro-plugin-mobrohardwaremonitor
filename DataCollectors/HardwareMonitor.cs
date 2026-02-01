@@ -77,6 +77,9 @@ internal class HardwareMonitor(Computer computer) : IHardwareMonitor
         Power: GetSensorValue(SensorType.Power, sensors[LibreSensor.GpuPower]),
         DateTime: now
       );
+          MemoryCapacity: (long?)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryCapacity]),
+          MemoryAvailable: (long?)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryAvailable]),
+          MemoryUsed: (long?)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryUsed]),
     }
   }
 
@@ -181,7 +184,9 @@ internal class HardwareMonitor(Computer computer) : IHardwareMonitor
   private static double GetSensorValue(SensorType type, ISensor? sensor)
   {
     var value = sensor?.Value;
-    if (value is null or 0f) return 0D;
+
+    if (value is null) return null;
+    if (value == 0f) return 0D;
 
     var doubleVal = Convert.ToDouble(value);
     return type switch
