@@ -8,7 +8,6 @@ using MoBro.Plugin.SDK.Models.Metrics;
 namespace MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
 
 internal readonly record struct SystemStats(
-  DateTime SystemTime,
   DateTime DateTime
 ) : IMetricConvertible
 {
@@ -22,6 +21,6 @@ internal readonly record struct SystemStats(
 
   public IEnumerable<MetricValue> ToMetricValues()
   {
-    yield return Builder.Value(Ids.System.Time, DateTime, SystemTime);
+    yield return Builder.Value(Ids.System.Time, DateTime, DateTime);
   }
 }
