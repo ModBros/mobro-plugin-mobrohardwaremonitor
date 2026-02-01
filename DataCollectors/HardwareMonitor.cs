@@ -5,35 +5,60 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using LibreHardwareMonitor.Hardware;
 using MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
+using MoBro.Plugin.SDK.Services;
 
 namespace MoBro.Plugin.MoBroHardwareMonitor.DataCollectors;
 
-internal class HardwareMonitor(Computer computer) : IHardwareMonitor
+internal class HardwareMonitor : IHardwareMonitor
 {
-  private readonly (IHardware, Dictionary<LibreSensor, ISensor?>)[] _cpuSensors = ParseCpuSensors(computer);
-  private readonly (IHardware, Dictionary<LibreSensor, ISensor?>)[] _gpuSensors = ParseGpuSensors(computer);
+  private static readonly TimeSpan LibreSensorScanInterval = TimeSpan.FromSeconds(10);
+  private static readonly TimeSpan LibreSensorInitDuration = TimeSpan.FromMinutes(5);
 
   private readonly Dictionary<int, long> _processCpuTimeTicks = new();
+  private readonly IMoBroScheduler _scheduler;
+  private readonly Computer _computer;
+  private readonly DateTime _startTime;
+
+  private (IHardware, Dictionary<LibreSensor, ISensor?>)[] _cpuSensors;
+  private (IHardware, Dictionary<LibreSensor, ISensor?>)[] _gpuSensors;
 
   private long _lastWallTimestamp;
   private bool _hasProcessBaseline;
+
+  public HardwareMonitor(Computer computer, IMoBroScheduler scheduler)
+  {
+    _startTime = DateTime.UtcNow;
+    _scheduler = scheduler;
+    _computer = computer;
+
+    lock (_computer)
+    {
+      _cpuSensors = ParseCpuSensors(computer);
+      _gpuSensors = ParseGpuSensors(computer);
+    }
+
+    scheduler.OneOff(RescanLibreSensors, LibreSensorScanInterval);
+  }
 
   public SystemStats GetSystem() => new(DateTime.UtcNow);
 
   public IEnumerable<ProcessorStats> GetProcessors()
   {
-    var now = DateTime.UtcNow;
-    for (var i = 0; i < _cpuSensors.Length; i++)
+    lock (_computer)
     {
-      var (hardware, sensors) = _cpuSensors[i];
-      hardware.Update();
-      yield return new ProcessorStats(
-        Index: i,
-        Load: GetSensorValue(SensorType.Load, sensors[LibreSensor.CpuTotalUsage]),
-        Temperature: GetSensorValue(SensorType.Temperature, sensors[LibreSensor.CpuTotalTemperature]),
-        Power: GetSensorValue(SensorType.Power, sensors[LibreSensor.CpuTotalPower]),
-        DateTime: now
-      );
+      var now = DateTime.UtcNow;
+      for (var i = 0; i < _cpuSensors.Length; i++)
+      {
+        var (hardware, sensors) = _cpuSensors[i];
+        hardware.Update();
+        yield return new ProcessorStats(
+          Index: i,
+          Load: GetSensorValue(SensorType.Load, sensors[LibreSensor.CpuTotalUsage]),
+          Temperature: GetSensorValue(SensorType.Temperature, sensors[LibreSensor.CpuTotalTemperature]),
+          Power: GetSensorValue(SensorType.Power, sensors[LibreSensor.CpuTotalPower]),
+          DateTime: now
+        );
+      }
     }
   }
 
@@ -61,25 +86,25 @@ internal class HardwareMonitor(Computer computer) : IHardwareMonitor
 
   public IEnumerable<GraphicsStats> GetGraphics()
   {
-    var now = DateTime.UtcNow;
-    for (var i = 0; i < _gpuSensors.Length; i++)
+    lock (_computer)
     {
-      var (hardware, sensors) = _gpuSensors[i];
-      hardware.Update();
-      yield return new GraphicsStats(
-        Index: i,
-        CoreLoad: GetSensorValue(SensorType.Load, sensors[LibreSensor.GpuUsageCore]),
-        MemoryLoad: GetSensorValue(SensorType.Load, sensors[LibreSensor.GpuMemoryUsage]),
-        MemoryCapacity: (long)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryCapacity]),
-        MemoryAvailable: (long)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryAvailable]),
-        MemoryUsed: (long)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryUsed]),
-        Temperature: GetSensorValue(SensorType.Temperature, sensors[LibreSensor.GpuTemperature]),
-        Power: GetSensorValue(SensorType.Power, sensors[LibreSensor.GpuPower]),
-        DateTime: now
-      );
+      var now = DateTime.UtcNow;
+      for (var i = 0; i < _gpuSensors.Length; i++)
+      {
+        var (hardware, sensors) = _gpuSensors[i];
+        hardware.Update();
+        yield return new GraphicsStats(
+          Index: i,
+          CoreLoad: GetSensorValue(SensorType.Load, sensors[LibreSensor.GpuUsageCore]),
+          MemoryLoad: GetSensorValue(SensorType.Load, sensors[LibreSensor.GpuMemoryUsage]),
           MemoryCapacity: (long?)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryCapacity]),
           MemoryAvailable: (long?)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryAvailable]),
           MemoryUsed: (long?)GetSensorValue(SensorType.SmallData, sensors[LibreSensor.GpuMemoryUsed]),
+          Temperature: GetSensorValue(SensorType.Temperature, sensors[LibreSensor.GpuTemperature]),
+          Power: GetSensorValue(SensorType.Power, sensors[LibreSensor.GpuPower]),
+          DateTime: now
+        );
+      }
     }
   }
 
@@ -181,7 +206,21 @@ internal class HardwareMonitor(Computer computer) : IHardwareMonitor
     return cpuUsage;
   }
 
-  private static double GetSensorValue(SensorType type, ISensor? sensor)
+  private void RescanLibreSensors()
+  {
+    lock (_computer)
+    {
+      _cpuSensors = ParseCpuSensors(_computer);
+      _gpuSensors = ParseGpuSensors(_computer);
+    }
+
+    if (_startTime + LibreSensorInitDuration > DateTime.UtcNow)
+    {
+      _scheduler.OneOff(RescanLibreSensors, LibreSensorScanInterval);
+    }
+  }
+
+  private static double? GetSensorValue(SensorType type, ISensor? sensor)
   {
     var value = sensor?.Value;
 
