@@ -1,88 +1,42 @@
-Basic Hardware Data Plugin
+# MoBro Hardware Monitor
 
-This plugin provides essential hardware metrics that are standard on virtually every PC, regardless of its specific
-hardware configuration.  
-It does **not** offer hardware-specific details, such as individual core temperatures or loads.
-
-All metrics are collected directly via Windows APIs or
-the [LibreHardwareMonitorLib](https://www.nuget.org/packages/LibreHardwareMonitorLib/).
+The universal monitoring plugin for every PC.  
+This plugin provides a standardized set of essential hardware metrics that work across virtually any configuration,
+ensuring you always have your core stats at your fingertips.
 
 ---
 
-# Setup
+## Metrics
 
-Simply install the plugin, and you're all set — no additional configuration required.
-
----
-
-# Metrics Overview
-
-Provides the following metrics:
-
-## Processor
-
-- **Name**: The name of the system's CPU
-- **Manufacturer**: The CPU manufacturer
-- **Cores**: Number of physical cores
-- **Logical processors**: Number of logical processors
-- **Max. clock speed**: The CPU’s maximum clock speed
-- **Power usage**: Current power consumption of the CPU
-- **Temperature**: Current CPU temperature
-- **Utilization**: Total CPU utilization
-
-## Graphics Card
-
-- **Name**: GPU name
-- **Manufacturer**: GPU manufacturer
-- **Driver**: Installed GPU driver
-- **Refresh rate**: Current screen refresh rate
-- **Horizontal resolution**: Display's horizontal resolution
-- **Vertical resolution**: Display's vertical resolution
-- **Core utilization**: GPU core usage percentage
-- **Memory utilization**: GPU memory usage percentage
-- **Power usage**: GPU’s current power consumption
-- **Temperature**: Current GPU temperature
-- **Used memory**: Memory currently in use
-- **Total memory capacity**: GPU’s total memory capacity
-- **Available memory**: GPU memory currently available
-
-## Memory
-
-- **Capacity**: The capacity of an individual memory module
-- **Manufacturer**: Memory manufacturer
-- **Frequency**: Current frequency of the memory
-- **Total capacity**: Total memory available in the system
-- **Available**: Unused memory
-- **Used**: Memory currently being utilized
-- **Utilization**: Percentage of memory in use
-
-## System
-
-- **Name**: Operating system name
-- **Version**: Specific version of the operating system
-- **Type**: Operating system type (32-bit/64-bit)
-- **Architecture**: Platform architecture
-- **User**: Currently logged-in user
-- **Hostname**: System hostname
-- **System time**: Current date and time on the system
-
-## Processes
-
-- **Process name**: Name of the running process
-- **CPU usage**: CPU usage percentage of the process
-- **Memory usage**: Memory usage of the process
+- **CPU**: Name, manufacturer, core counts, utilization, and temperatures.
+- **GPU**: Full specs including driver version, memory usage, utilization, and thermal data.
+- **Memory**: Capacity, manufacturer, frequency, and real-time RAM utilization.
+- **System**: Detailed OS info, hostname, architecture, and current system time.
+- **Process Monitoring**: Track top running processes by CPU or Memory usage.
 
 ---
 
-# Settings
+## Setup
 
-This plugin offers customizable settings:
+**Zero configuration required.**
 
-| Setting          | Default   | Description                                                                                                                     |
-|------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------|
-| Update frequency | 1000 ms   | The interval (in milliseconds) for reading and updating metrics. Lower values provide faster updates but may increase CPU load. |
-| Processor        | Enabled   | Toggle for including CPU metrics                                                                                                |
-| Graphics card    | Enabled   | Toggle for including GPU metrics                                                                                                |
-| Memory           | Enabled   | Toggle for including memory metrics                                                                                             |
-| Processes        | 0         | Number of processes to monitor                                                                                                  |
-| Processes sort   | CPU usage | Criteria to sort monitored processes                                                                                            |
+1. **Install** via the MoBro Marketplace.
+2. Ensure that PawnIO is installed (automatically included with MoBro).
+3. The plugin will automatically begin querying your hardware and providing metrics.
+4. Add your desired metrics to your MoBro dashboard.
+
+**Note:** This plugin focuses on essential "standard" metrics.  
+For highly detailed per-core data or specific motherboard sensors, check out our **LibreHardwareMonitor** plugin.
+
+---
+
+## Settings
+
+Fine-tune the monitoring to balance performance and detail.
+
+| Setting                 | Default   | Description                                                       |
+|:------------------------|:----------|:------------------------------------------------------------------|
+| **Update Frequency**    | `1000ms`  | How often metrics are refreshed. Lower values = smoother updates. |
+| **Monitored Processes** | `0`       | Set the number of top processes to track (e.g., top 5).           |
+| **Process Sorting**     | `CPU`     | Choose to sort processes by CPU usage or Memory usage.            |
+| **Hardware Toggles**    | `Enabled` | Individually enable/disable CPU, GPU, or RAM monitoring.          |
