@@ -58,6 +58,14 @@ internal static class Ids
     internal const string ProcessMemory = "system.process.memory";
   }
 
+  internal static class Network
+  {
+    internal const string PingLatency = "network.ping.latency";
+    internal const string PingHost = "network.ping.host";
+    internal const string DownloadSpeed = "network.download.speed";
+    internal const string UploadSpeed = "network.upload.speed";
+  }
+
   internal static class Groups
   {
     internal const string CpuGroupIndividual = "group.cpu";

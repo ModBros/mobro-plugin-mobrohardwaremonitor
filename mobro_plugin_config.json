@@ -79,6 +79,14 @@
       "required": false
     },
     {
+      "type": "checkbox",
+      "name": "network_metrics",
+      "label": "settings.network.title",
+      "description": "settings.network.desc",
+      "defaultValue": true,
+      "required": false
+    },
+    {
       "type": "number",
       "name": "num_processes",
       "label": "settings.num_processes.title",
@@ -87,6 +95,14 @@
       "defaultValue": 0,
       "min": 0,
       "max": 20
+    },
+    {
+      "type": "string",
+      "name": "ping_host",
+      "label": "settings.ping_host.title",
+      "description": "settings.ping_host.desc",
+      "required": false,
+      "defaultValue": "8.8.8.8"
     },
     {
       "type": "select",

@@ -15,6 +15,8 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
 {
   private static readonly TimeSpan InitialDelay = TimeSpan.FromSeconds(2);
   private const int DefaultUpdateFrequencyMs = 1000;
+  private static readonly TimeSpan PingInterval = TimeSpan.FromSeconds(5);
+  private const int PingTimeoutMs = 3000;
 
   private readonly IMoBroService _service;
   private readonly IMoBroScheduler _scheduler;
@@ -23,13 +25,16 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
   private IHardwareInfoCollector? _hardwareInfoCollector;
   private IHardwareMonitor? _hardwareMonitor;
   private Computer? _computer;
+  private NetworkMonitor? _networkMonitor;
 
   private readonly int _updateFrequency;
   private readonly bool _monitorCpu;
   private readonly bool _monitorGpu;
   private readonly bool _monitorRam;
+  private readonly bool _monitorNetwork;
   private readonly int _numProcesses;
   private readonly string _processesSort;
+  private readonly string _pingHost;
 
   public Plugin(IMoBroService service, IMoBroSettings settings, IMoBroScheduler scheduler, ILogger logger)
   {
@@ -41,8 +46,10 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
     _monitorCpu = settings.GetValue<bool>("cpu_metrics", true);
     _monitorGpu = settings.GetValue<bool>("gpu_metrics", true);
     _monitorRam = settings.GetValue<bool>("ram_metrics", true);
+    _monitorNetwork = settings.GetValue<bool>("network_metrics", true);
     _numProcesses = settings.GetValue<int>("num_processes", 0);
     _processesSort = settings.GetValue<string>("processes_sort", "cpu");
+    _pingHost = settings.GetValue<string>("ping_host", "8.8.8.8");
   }
 
   public void Init()
@@ -69,6 +76,7 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
 
     _hardwareInfoCollector = new HardwareInfoCollector();
     _hardwareMonitor = new HardwareMonitor(_computer, _scheduler);
+    if (_monitorNetwork) _networkMonitor = new NetworkMonitor(_pingHost, PingTimeoutMs);
 
     // static metrics
     _logger.LogInformation("Registering static metrics");
@@ -84,10 +92,18 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
     if (_monitorGpu) Register(_hardwareMonitor.GetGraphics());
     if (_monitorRam) Register(_hardwareMonitor.GetMemory());
     if (_numProcesses > 0) Register(_hardwareMonitor.GetProcessesStats(_numProcesses, _processesSort));
+    if (_networkMonitor is not null) Register(_networkMonitor.GetNetwork());
 
     // start polling metric values
     _logger.LogInformation("Starting metric polling with interval: {UpdateFrequency}ms", _updateFrequency);
     _scheduler.Interval(UpdateMetrics, TimeSpan.FromMilliseconds(_updateFrequency), InitialDelay);
+
+    // ping on a separate interval so a slow or unreachable host does not block the other metrics
+    if (_networkMonitor is not null)
+    {
+      _logger.LogInformation("Starting ping to {PingHost} with interval: {PingInterval}", _pingHost, PingInterval);
+      _scheduler.Interval(_networkMonitor.UpdatePing, PingInterval, TimeSpan.Zero);
+    }
   }
 
   private void UpdateMetrics()
@@ -109,6 +125,12 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
     if (_monitorRam)
     {
       _service.UpdateMetricValues(_hardwareMonitor.GetMemory().ToMetricValues());
+    }
+
+    if (_networkMonitor is not null)
+    {
+      _networkMonitor.UpdateTraffic();
+      _service.UpdateMetricValues(_networkMonitor.GetNetwork().ToMetricValues());
     }
 
     if (_numProcesses > 0)
