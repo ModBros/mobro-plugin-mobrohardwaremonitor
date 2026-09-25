@@ -13,6 +13,7 @@ internal class HardwareMonitor : IHardwareMonitor
 {
   private static readonly TimeSpan LibreSensorScanInterval = TimeSpan.FromSeconds(10);
   private static readonly TimeSpan LibreSensorInitDuration = TimeSpan.FromMinutes(5);
+  private static readonly TimeSpan ProcessSampleInterval = TimeSpan.FromSeconds(2);
 
   private readonly Dictionary<int, long> _processCpuTimeTicks = new();
   private readonly object _processLock = new();
@@ -25,6 +26,7 @@ internal class HardwareMonitor : IHardwareMonitor
 
   private long _lastWallTimestamp;
   private bool _hasProcessBaseline;
+  private TopProcessesStats[] _topProcesses = [];
 
   public HardwareMonitor(Computer computer, IMoBroScheduler scheduler)
   {
@@ -113,78 +115,72 @@ internal class HardwareMonitor : IHardwareMonitor
   {
     lock (_processLock)
     {
-      var now = DateTime.UtcNow;
+      // enumerating all processes is comparatively expensive, so sample at most once per ProcessSampleInterval
+      // and return the previous sample in between
       var nowWallTimestamp = Stopwatch.GetTimestamp();
-
-      var processes = Process.GetProcesses();
-      var alivePids = new HashSet<int>(processes.Length);
-      var sortKey = sort.ToLowerInvariant();
-
-      try
+      if (_hasProcessBaseline &&
+          Stopwatch.GetElapsedTime(_lastWallTimestamp, nowWallTimestamp) < ProcessSampleInterval)
       {
-        var topProcesses = processes
-          .Select(p =>
-          {
-            alivePids.Add(p.Id);
-            var cpu = GetCpuUsagePercent(nowWallTimestamp, p);
-            return (Process: p, Cpu: cpu);
-          })
-          .OrderByDescending(t =>
-          {
-            try
-            {
-              return sortKey switch
-              {
-                "cpu" => t.Cpu,
-                "ram" => t.Process.PrivateMemorySize64,
-                _ => t.Process.Id
-              };
-            }
-            catch (Exception)
-            {
-              return 0; // Treat dead processes as 0 usage
-            }
-          })
-          .Take(count)
-          .ToArray();
+        return _topProcesses;
+      }
 
-        // Update baseline AFTER sampling.
-        _lastWallTimestamp = nowWallTimestamp;
-        _hasProcessBaseline = true;
+      _topProcesses = SampleTopProcesses(nowWallTimestamp, count, sort);
+      return _topProcesses;
+    }
+  }
 
-        // Prevent unbounded growth from exited processes.
-        foreach (var pid in _processCpuTimeTicks.Keys.Where(pid => !alivePids.Contains(pid)).ToArray())
+  private TopProcessesStats[] SampleTopProcesses(long nowWallTimestamp, int count, string sort)
+  {
+    var now = DateTime.UtcNow;
+    var processes = Process.GetProcesses();
+    var alivePids = new HashSet<int>(processes.Length);
+
+    try
+    {
+      // read every value only once per process
+      var samples = new List<(int Pid, string Name, double Cpu, long Memory)>(processes.Length);
+      foreach (var p in processes)
+      {
+        alivePids.Add(p.Id);
+        var cpu = GetCpuUsagePercent(nowWallTimestamp, p);
+        try
         {
-          _processCpuTimeTicks.Remove(pid);
+          samples.Add((p.Id, p.ProcessName, cpu, p.PrivateMemorySize64));
         }
-
-        for (var i = 0; i < topProcesses.Length; i++)
+        catch (Exception)
         {
-          TopProcessesStats stats;
-          try
-          {
-            stats = new TopProcessesStats(
-              i,
-              topProcesses[i].Process.ProcessName,
-              topProcesses[i].Cpu,
-              topProcesses[i].Process.PrivateMemorySize64,
-              now
-            );
-          }
-          catch (Exception)
-          {
-            continue;
-          }
-
-          yield return stats;
+          // process exited in the meantime
         }
       }
-      finally
+
+      // Update baseline AFTER sampling.
+      _lastWallTimestamp = nowWallTimestamp;
+      _hasProcessBaseline = true;
+
+      // Prevent unbounded growth from exited processes.
+      foreach (var pid in _processCpuTimeTicks.Keys.Where(pid => !alivePids.Contains(pid)).ToArray())
       {
-        foreach (var p in processes)
-        {
-          p.Dispose();
-        }
+        _processCpuTimeTicks.Remove(pid);
+      }
+
+      Func<(int Pid, string Name, double Cpu, long Memory), double> sortKey = sort.ToLowerInvariant() switch
+      {
+        "cpu" => s => s.Cpu,
+        "ram" => s => s.Memory,
+        _ => s => s.Pid
+      };
+
+      return samples
+        .OrderByDescending(sortKey)
+        .Take(count)
+        .Select((s, i) => new TopProcessesStats(i, s.Name, s.Cpu, s.Memory, now))
+        .ToArray();
+    }
+    finally
+    {
+      foreach (var p in processes)
+      {
+        p.Dispose();
       }
     }
   }

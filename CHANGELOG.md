@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated dependencies
+- Top processes are sampled at most every 2 seconds to reduce the plugin's own CPU usage
 
 ### Fixed
 
