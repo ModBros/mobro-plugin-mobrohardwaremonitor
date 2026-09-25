@@ -11,7 +11,7 @@ internal class HardwareInfoCollector : IHardwareInfoCollector
 {
   private const string ManagementScope = "root\\cimv2";
 
-  private const string MemoryQuery = "SELECT Capacity, Manufacturer, Speed FROM Win32_PhysicalMemory";
+  private const string MemoryQuery = "SELECT Capacity, Manufacturer, Speed, ConfiguredClockSpeed FROM Win32_PhysicalMemory";
   private const string ProcessorQuery = "SELECT Name, Manufacturer, NumberOfCores, NumberOfLogicalProcessors, MaxClockSpeed FROM Win32_Processor";
   private const string GraphicsQuery = "SELECT Name, AdapterCompatibility, DriverVersion, CurrentRefreshRate, CurrentHorizontalResolution, CurrentVerticalResolution FROM Win32_VideoController";
 
@@ -91,11 +91,15 @@ internal class HardwareInfoCollector : IHardwareInfoCollector
     var count = 0;
     foreach (var mo in QueryWmi(MemoryQuery))
     {
+      // prefer the actual running speed (e.g. with XMP/EXPO enabled) over the rated speed
+      var speed = GetValue<uint>(mo["ConfiguredClockSpeed"]);
+      if (speed == 0) speed = GetValue<uint>(mo["Speed"]);
+
       yield return new MemoryInfo(
         count++,
         GetValue<ulong>(mo["Capacity"]),
         GetStringValue(mo["Manufacturer"]),
-        GetValue<uint>(mo["Speed"]) * 1_000_000UL, // convert to Hz
+        speed * 1_000_000UL, // convert to Hz
         now
       );
     }
