@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading;
 using MoBro.Plugin.MoBroHardwareMonitor.Model.Stats;
@@ -11,9 +12,8 @@ internal sealed class NetworkMonitor
   private readonly int _pingTimeout;
   private readonly Lock _lock = new();
 
-  // only accessed from UpdateTraffic
-  private long _lastBytesReceived;
-  private long _lastBytesSent;
+  // only accessed from UpdateTraffic (keyed by interface id)
+  private Dictionary<string, (long Received, long Sent)> _lastBytes;
 
   // shared between UpdateTraffic, UpdatePing and GetNetwork (guarded by _lock)
   private DateTime _lastSampleTime;
@@ -26,7 +26,7 @@ internal sealed class NetworkMonitor
     _pingHost = pingHost;
     _pingTimeout = pingTimeout;
 
-    (_lastBytesReceived, _lastBytesSent) = GetTotalBytes();
+    _lastBytes = GetBytesPerInterface();
     _lastSampleTime = DateTime.UtcNow;
   }
 
@@ -41,23 +41,32 @@ internal sealed class NetworkMonitor
   public void UpdateTraffic()
   {
     var now = DateTime.UtcNow;
-    var (currentReceived, currentSent) = GetTotalBytes();
+    var currentBytes = GetBytesPerInterface();
+
+    // sum up the deltas per interface, so interfaces coming up or going down between samples
+    // don't cause spikes, and counter resets don't produce negative values
+    long receivedDelta = 0;
+    long sentDelta = 0;
+    foreach (var (id, current) in currentBytes)
+    {
+      if (!_lastBytes.TryGetValue(id, out var last)) continue;
+      receivedDelta += Math.Max(0, current.Received - last.Received);
+      sentDelta += Math.Max(0, current.Sent - last.Sent);
+    }
 
     lock (_lock)
     {
       var elapsed = (now - _lastSampleTime).TotalSeconds;
       if (elapsed > 0)
       {
-        // interfaces going up/down or counter resets can make the delta negative
-        _downloadSpeed = Math.Max(0, currentReceived - _lastBytesReceived) / elapsed * 8;
-        _uploadSpeed = Math.Max(0, currentSent - _lastBytesSent) / elapsed * 8;
+        _downloadSpeed = receivedDelta / elapsed * 8;
+        _uploadSpeed = sentDelta / elapsed * 8;
       }
 
       _lastSampleTime = now;
     }
 
-    _lastBytesReceived = currentReceived;
-    _lastBytesSent = currentSent;
+    _lastBytes = currentBytes;
   }
 
   public void UpdatePing()
@@ -87,19 +96,20 @@ internal sealed class NetworkMonitor
     }
   }
 
-  private static (long received, long sent) GetTotalBytes()
+  private static Dictionary<string, (long Received, long Sent)> GetBytesPerInterface()
   {
-    long received = 0;
-    long sent = 0;
+    var bytes = new Dictionary<string, (long Received, long Sent)>();
     foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
     {
       if (nic.OperationalStatus != OperationalStatus.Up) continue;
       if (nic.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
-      var stats = nic.GetIPv4Statistics();
-      received += stats.BytesReceived;
-      sent += stats.BytesSent;
+      // skip NDIS filter pseudo-interfaces (e.g. "Ethernet-QoS Packet Scheduler-0000") that have no IP stack bound
+      // but report the same counters as the adapter they are attached to (would count traffic multiple times)
+      if (!nic.Supports(NetworkInterfaceComponent.IPv4) && !nic.Supports(NetworkInterfaceComponent.IPv6)) continue;
+      var stats = nic.GetIPStatistics();
+      bytes[nic.Id] = (stats.BytesReceived, stats.BytesSent);
     }
 
-    return (received, sent);
+    return bytes;
   }
 }
