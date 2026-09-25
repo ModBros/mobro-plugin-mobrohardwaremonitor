@@ -302,8 +302,10 @@ internal class HardwareMonitor : IHardwareMonitor
           { LibreSensor.GpuMemoryCapacity, GetSensor(hardware, SensorType.SmallData, "total") },
           { LibreSensor.GpuMemoryAvailable, GetSensor(hardware, SensorType.SmallData, "free", "available") },
           { LibreSensor.GpuMemoryUsed, GetSensor(hardware, SensorType.SmallData, "used") },
-          { LibreSensor.GpuPower, GetSensor(hardware, SensorType.Power, "core", "hot spot") },
-          { LibreSensor.GpuTemperature, GetSensor(hardware, SensorType.Temperature, "package", "total") },
+          {
+            LibreSensor.GpuPower, GetSensor(hardware, SensorType.Power, "package", "total", "board", "core", "hot spot")
+          },
+          { LibreSensor.GpuTemperature, GetSensor(hardware, SensorType.Temperature, "core", "package", "total") },
         }
       );
     }

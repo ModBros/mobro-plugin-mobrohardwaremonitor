@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Memory frequency being reported 1000x too low (e.g. 6 MHz instead of 6000 MHz)
 - Memory frequency showing the rated instead of the configured speed (e.g. with XMP/EXPO enabled)
+- GPU power and temperature preferring the wrong sensors (power now prefers total board power, temperature the core
+  temperature)
 - Network speeds counting traffic multiple times via NDIS filter pseudo-interfaces, and spiking when an interface
   comes up or goes down
 
