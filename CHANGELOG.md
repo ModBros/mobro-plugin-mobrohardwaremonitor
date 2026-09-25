@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated dependencies
 
+### Fixed
+
+- Memory frequency being reported 1000x too low (e.g. 6 MHz instead of 6000 MHz)
+
 ## 1.1.0 - 2026-02-01
 
 ### Added

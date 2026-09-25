@@ -11,7 +11,7 @@ internal readonly record struct MemoryInfo(
   int Index,
   ulong Capacity,
   string Manufacturer,
-  uint Frequency,
+  ulong Frequency,
   DateTime DateTime
 ) : IMetricConvertible
 {

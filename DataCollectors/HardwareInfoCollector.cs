@@ -95,7 +95,7 @@ internal class HardwareInfoCollector : IHardwareInfoCollector
         count++,
         GetValue<ulong>(mo["Capacity"]),
         GetStringValue(mo["Manufacturer"]),
-        GetValue<uint>(mo["Speed"]) * 1000, // convert to Hz
+        GetValue<uint>(mo["Speed"]) * 1_000_000UL, // convert to Hz
         now
       );
     }
