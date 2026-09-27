@@ -24,7 +24,7 @@ public static class PawnIo
       return version;
     }
 
-    using var registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+    using var registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
     using var subKeyWow64 = registryKey.OpenSubKey(RegistryPath);
 
     return Version.TryParse(subKeyWow64?.GetValue("DisplayVersion") as string, out version) ? version : null;
