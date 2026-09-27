@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated MoBro SDK to v1.2.0
 - Updated dependencies
 - Top processes are sampled at most every 2 seconds to reduce the plugin's own CPU usage
 
