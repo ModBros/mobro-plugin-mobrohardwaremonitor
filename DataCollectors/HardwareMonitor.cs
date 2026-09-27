@@ -253,8 +253,8 @@ internal class HardwareMonitor : IHardwareMonitor
     {
       SensorType.Throughput => doubleVal * 8, // bytes => bit
       SensorType.Clock => doubleVal * 1_000_000, // MHz => Hertz
-      SensorType.SmallData => doubleVal * 1_000_000, // MB => Byte
-      SensorType.Data => doubleVal * 1_000_000_000, // GB => Byte
+      SensorType.SmallData => doubleVal * 1024 * 1024, // MiB => Byte
+      SensorType.Data => doubleVal * 1024 * 1024 * 1024, // GiB => Byte
       _ => doubleVal
     };
   }

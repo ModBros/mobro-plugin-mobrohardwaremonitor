@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network speeds counting traffic multiple times via NDIS filter pseudo-interfaces, and spiking when an interface
   comes up or goes down
 - PawnIO detection now falls back to the 32-bit registry view
+- GPU memory values are now converted from binary units (MiB) as reported by LibreHardwareMonitor
 
 ## 1.1.0 - 2026-02-01
 
