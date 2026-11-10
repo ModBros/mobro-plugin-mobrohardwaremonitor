@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Network metrics: download speed, upload speed and ping latency
+- Network metrics: download speed, upload speed and ping latency (ping is opt-in via the "Ping host" setting)
 
 ### Changed
 

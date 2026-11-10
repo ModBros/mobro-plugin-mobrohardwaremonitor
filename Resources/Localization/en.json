@@ -104,7 +104,7 @@
   "settings.processes_sort.option_cpu": "CPU usage",
   "settings.processes_sort.option_ram": "Memory usage",
   "settings.ping_host.title": "Ping host",
-  "settings.ping_host.desc": "The host to ping for latency measurement",
+  "settings.ping_host.desc": "The host to ping for latency measurement (e.g. 8.8.8.8). Leave empty to disable pinging",
   "dependencies.pawnio.desc": "MoBroHardwareMonitor uses PawnIO to read certain hardware sensors. Without this driver, some metrics will not be available.",
   "dependencies.pawnio.title": "PawnIO"
 }

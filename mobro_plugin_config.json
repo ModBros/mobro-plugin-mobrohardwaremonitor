@@ -102,7 +102,7 @@
       "label": "settings.ping_host.title",
       "description": "settings.ping_host.desc",
       "required": false,
-      "defaultValue": "8.8.8.8"
+      "defaultValue": ""
     },
     {
       "type": "select",

@@ -104,7 +104,7 @@
   "settings.processes_sort.option_cpu": "CPU-Auslastung",
   "settings.processes_sort.option_ram": "Speichernutzung",
   "settings.ping_host.title": "Ping-Host",
-  "settings.ping_host.desc": "Der Host, der für die Latenzmessung angepingt wird",
+  "settings.ping_host.desc": "Der Host, der für die Latenzmessung angepingt wird (z.B. 8.8.8.8). Leer lassen, um den Ping zu deaktivieren",
   "dependencies.pawnio.desc": "MoBroHardwareMonitor verwendet PawnIO, um bestimmte Hardwaresensoren auszulesen. Ohne diesen Treiber stehen einige Metriken nicht zur Verfügung.",
   "dependencies.pawnio.title": "PawnIO"
 }

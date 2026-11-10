@@ -49,7 +49,7 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
     _monitorNetwork = settings.GetValue<bool>("network_metrics", true);
     _numProcesses = settings.GetValue<int>("num_processes", 0);
     _processesSort = settings.GetValue<string>("processes_sort", "cpu");
-    _pingHost = settings.GetValue<string>("ping_host", "8.8.8.8");
+    _pingHost = settings.GetValue<string>("ping_host", "")?.Trim() ?? "";
   }
 
   public void Init()
@@ -98,8 +98,8 @@ public sealed class Plugin : IMoBroPlugin, IDisposable
     _logger.LogInformation("Starting metric polling with interval: {UpdateFrequency}ms", _updateFrequency);
     _scheduler.Interval(UpdateMetrics, TimeSpan.FromMilliseconds(_updateFrequency), InitialDelay);
 
-    // ping on a separate interval so a slow or unreachable host does not block the other metrics
-    if (_networkMonitor is not null)
+    // ping is opt-in (empty host = off) and runs on a separate interval so a slow host does not block other metrics
+    if (_networkMonitor is not null && _pingHost.Length > 0)
     {
       _logger.LogInformation("Starting ping to {PingHost} with interval: {PingInterval}", _pingHost, PingInterval);
       _scheduler.Interval(_networkMonitor.UpdatePing, PingInterval, TimeSpan.Zero);
